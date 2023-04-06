@@ -1,5 +1,18 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
+
+pragma abicoder v2;
+
+import "../interfaces/OpsTaskCreator.sol";
+
+import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
+import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
+
+interface WETH9_ {
+    function deposit() external payable;
+
+    function withdraw(uint wad) external;
+}
 
 import {IConnext} from "@connext/nxtp-contracts/contracts/core/connext/interfaces/IConnext.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -9,42 +22,86 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import "hardhat/console.sol";
 
-contract BulkSwap {
+contract BulkSwap is OpsTaskCreator {
     using SafeERC20 for IERC20;
 
+    receive() external payable {}
+
+    fallback() external payable {}
+
     IConnext public immutable connext;
+    ISwapRouter public immutable swapRouter;
 
-    // struct Deposit {
-    //     address to;
-    //     uint256 amount;
-    //     uint256 timestamp;
-    //     address fromToken;
-    //     address toToken;
-    //     bool isActive;
-    // }
+    uint24 public constant poolFee = 500;
+    uint256 public out;
+    address public constant WETH = 0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6;
 
-    constructor(IConnext _connext) {
+    constructor(
+        IConnext _connext,
+        ISwapRouter _swapRouter,
+        address payable _ops
+    ) OpsTaskCreator(_ops, msg.sender) {
         connext = _connext;
+        swapRouter = _swapRouter;
         owner = msg.sender;
     }
 
-    // mapping(address => Deposit) public deposits;
+    function createTask(
+        address _token,
+        uint256 amountIn,
+        address payable _recipient,
+        uint256 _interval,
+        uint256 _startTime
+    ) internal returns (bytes32) {
+        bytes memory execData = abi.encodeWithSelector(
+            this.swapExactInputSingle.selector,
+            _token,
+            amountIn,
+            _recipient
+        );
 
-    // function deposit(
-    //     address _to,
-    //     uint256 _amount,
-    //     address _fromToken,
-    //     address _toToken
-    // ) external {
-    //     deposits[msg.sender] = Deposit({
-    //         to: _to,
-    //         amount: _amount,
-    //         timestamp: block.timestamp,
-    //         fromToken: _fromToken,
-    //         toToken: _toToken,
-    //         isActive: true
-    //     });
-    // }
+        ModuleData memory moduleData = ModuleData({
+            modules: new Module[](3),
+            args: new bytes[](3)
+        });
+
+        moduleData.modules[0] = Module.TIME;
+        moduleData.modules[1] = Module.PROXY;
+        moduleData.modules[2] = Module.SINGLE_EXEC;
+
+        moduleData.args[0] = _timeModuleArg(_startTime, _interval - 14400);
+        moduleData.args[1] = _proxyModuleArg();
+        moduleData.args[2] = _singleExecModuleArg();
+
+        bytes32 id = _createTask(address(this), execData, moduleData, ETH);
+        return id;
+    }
+
+    function swapExactInputSingle(
+        address _token,
+        uint256 amountIn,
+        address payable _recipient
+    ) external returns (uint256 amountOut) {
+        TransferHelper.safeApprove(_token, address(swapRouter), amountIn);
+
+        ISwapRouter.ExactInputSingleParams memory params = ISwapRouter
+            .ExactInputSingleParams({
+                tokenIn: _token,
+                tokenOut: WETH,
+                fee: poolFee,
+                recipient: address(this),
+                deadline: block.timestamp,
+                amountIn: amountIn,
+                amountOutMinimum: 0,
+                sqrtPriceLimitX96: 0
+            });
+
+        amountOut = swapRouter.exactInputSingle(params);
+
+        // address payable recipient  = payable(0x6d4b5acFB1C08127e8553CC41A9aC8F06610eFc7);
+        WETH9_(WETH).withdraw(amountOut);
+        _recipient.transfer(amountOut);
+    }
 
     function xTransfer(
         address recipient,
@@ -93,8 +150,10 @@ contract BulkSwap {
         uint256 amount;
         address fromToken;
         address toToken;
+        uint256 toChain;
         bool isActive;
         uint256 created;
+        uint256 updated;
     }
 
     DepositStruct[] activeDeposits;
@@ -102,10 +161,10 @@ contract BulkSwap {
 
     event Action(
         uint256 indexed DepositId,
-        string actionType,
-        Deactivated deleted,
-        address indexed executor,
-        uint256 createdAt
+        string indexed actionType,
+        bool isActive,
+        address indexed author,
+        uint256 timestamp
     );
 
     modifier ownerOnly() {
@@ -114,25 +173,28 @@ contract BulkSwap {
     }
 
     function createDeposit(
+        address _from,
         address _to,
         uint256 _amount,
         address _fromToken,
-        address _toToken
+        address _toToken,
+        uint256 _toChain
     ) external returns (bool) {
         DepositCounter++;
-        authorOf[DepositCounter] = msg.sender;
-        DepositsOf[msg.sender]++;
+        authorOf[DepositCounter] = _from;
+        DepositsOf[_from]++;
         activeDepositCounter++;
 
         activeDeposits.push(
             DepositStruct(
                 DepositCounter,
+                _from,
                 _to,
                 _amount,
                 _fromToken,
                 _toToken,
-                msg.sender,
-                Deactivated.NO,
+                _toChain,
+                true,
                 block.timestamp,
                 block.timestamp
             )
@@ -141,8 +203,8 @@ contract BulkSwap {
         emit Action(
             DepositCounter,
             "Deposit CREATED",
-            Deactivated.NO,
-            msg.sender,
+            true,
+            _from,
             block.timestamp
         );
 
@@ -202,12 +264,15 @@ contract BulkSwap {
         return inactiveDeposits;
     }
 
-    function deleteDeposit(uint256 DepositId) external returns (bool) {
-        require(authorOf[DepositId] == msg.sender, "Unauthorized entity");
+    function deleteDeposit(
+        uint256 DepositId,
+        address _from
+    ) external returns (bool) {
+        require(authorOf[DepositId] == _from, "Unauthorized entity");
 
         for (uint i = 0; i < activeDeposits.length; i++) {
             if (activeDeposits[i].DepositId == DepositId) {
-                activeDeposits[i].deleted = Deactivated.YES;
+                activeDeposits[i].isActive = false;
                 activeDeposits[i].updated = block.timestamp;
                 inactiveDeposits.push(activeDeposits[i]);
                 delDepositOf[DepositId] = authorOf[DepositId];
@@ -216,51 +281,18 @@ contract BulkSwap {
             }
         }
 
-        DepositsOf[msg.sender]--;
+        DepositsOf[_from]--;
         inactiveDepositCounter++;
         activeDepositCounter--;
 
         emit Action(
             DepositId,
             "Deposit DELETED",
-            Deactivated.YES,
-            msg.sender,
+            false,
+            _from,
             block.timestamp
         );
 
         return true;
     }
-
-    // function restorDeletedDeposit(
-    //     uint256 DepositId,
-    //     address author
-    // ) external ownerOnly returns (bool) {
-    //     require(delDepositOf[DepositId] == author, "Unmatched Author");
-
-    //     for (uint i = 0; i < inactiveDeposits.length; i++) {
-    //         if (inactiveDeposits[i].DepositId == DepositId) {
-    //             inactiveDeposits[i].deleted = Deactivated.NO;
-    //             inactiveDeposits[i].updated = block.timestamp;
-
-    //             activeDeposits.push(inactiveDeposits[i]);
-    //             delete inactiveDeposits[i];
-    //             authorOf[DepositId] = delDepositOf[DepositId];
-    //             delete delDepositOf[DepositId];
-    //         }
-    //     }
-
-    //     DepositsOf[author]++;
-    //     inactiveDepositCounter--;
-    //     activeDepositCounter++;
-
-    //     emit Action(
-    //         DepositId,
-    //         "Deposit RESTORED",
-    //         Deactivated.NO,
-    //         msg.sender,
-    //         block.timestamp
-    //     );
-
-    //     return true;
-    // }
 }

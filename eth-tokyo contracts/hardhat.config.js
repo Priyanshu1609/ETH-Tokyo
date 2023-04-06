@@ -27,7 +27,6 @@ module.exports = {
     mumbai: {
       url: process.env.ALCHEMY_MUMBAI_API_URL,
       accounts: [process.env.PRIVATE_KEY],
-      gasPrice: 1000000000000
     },
     gnosis: {
       url: process.env.ALCHEMY_GNOSIS_API_URL,

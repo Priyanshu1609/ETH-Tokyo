@@ -6,37 +6,35 @@
 // global scope, and execute the script.
 const { ethers } = require("hardhat");
 const hre = require("hardhat");
-const abi = require("../artifacts/contracts/OneInchV5Connector.sol/OneInchV5Connector.json").abi;
+const abi = require("../artifacts/contracts/BulkSwap.sol/BulkSwap.json").abi;
+
+// IConnext _connext,
+//   ISwapRouter _swapRouter,
+//     address payable _ops
 
 const deployGoerli = async () => {
-  const OneInchV5Connector = await hre.ethers.getContractFactory("OneInchV5Connector");
-  const oneInchV5Connector = await OneInchV5Connector.deploy(
-    "0x1111111254EEB25477B68fb85Ed929f73A960582",
+  const BulkSwap = await hre.ethers.getContractFactory("BulkSwap");
+  const bulkSwap = await BulkSwap.deploy(
+    "0xFCa08024A6D4bCc87275b1E4A1E22B71fAD7f649",
+    "0xE592427A0AEce92De3Edee1F18E0157C05861564",
+    "0xc1C6805B857Bef1f412519C4A842522431aFed39"
   )
 
-  await oneInchV5Connector.deployed();
+  await bulkSwap.deployed();
 
   console.log(
-    `Deployed to ${oneInchV5Connector.address}`
+    `Deployed to ${bulkSwap.address}`
   );
 
-  const contract = new ethers.Contract(oneInchV5Connector.address, abi, ethers.getDefaultProvider("mainnet"));
-  // console.log(contract);
 
-  const tx = await contract._swapOneInchV5(
-    "0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83",
-    "0x7f7440C5098462f833E123B44B8A03E1d9785BAb",
-    "1000000000000000000",
-    "1000000000000000000",
-    "0x"
-  )
-
-  // await hre.run("verify:verify", {
-  //   address: oneInchV5Connector.address,
-  //   constructorArguments: [
-  //     "0x1111111254EEB25477B68fb85Ed929f73A960582",
-  //   ],
-  // });
+  await hre.run("verify:verify", {
+    address: BulkSwap.address,
+    constructorArguments: [
+      "0xFCa08024A6D4bCc87275b1E4A1E22B71fAD7f649",
+      "0xE592427A0AEce92De3Edee1F18E0157C05861564",
+      "0xc1C6805B857Bef1f412519C4A842522431aFed39"
+    ],
+  });
 }
 
 
