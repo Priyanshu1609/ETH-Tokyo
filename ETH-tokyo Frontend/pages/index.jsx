@@ -10,6 +10,8 @@ import { useAccount } from "wagmi";
 import Schedule from "../components/Schedule";
 import { Tab } from "@headlessui/react";
 
+// import { useRouter } from "next/router";
+
 export const Chains = [
   {
     id: "0x6d5df1afb8bf499d21e517dc53c13019321955e7",
@@ -76,7 +78,7 @@ const Home = () => {
       range: 0,
     },
   ]);
-  const [instant, setInstant] = useState(false);
+  const[approve, setApprove] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [amount1, setAmount1] = useState("");
   const [amount2, setAmount2] = useState("");
@@ -141,6 +143,10 @@ const Home = () => {
     const format = web3.utils.fromWei(res);
     return format.toString() * 10 ** 12;
   };
+  // const router = useRouter();
+  // const onSubmit = async () =>{
+  //   router.push("/Review/[id]");
+  // }
 
   //   useEffect(() => {
   //     console.log(links)
@@ -654,7 +660,7 @@ const Home = () => {
                       </button>
                       <button
                         className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white"
-                        onClick={() => setInstant(true)}
+                        // onClick={onSubmit}
                       >
                         Instant
                       </button>
@@ -663,7 +669,7 @@ const Home = () => {
                 ) : (
                   <div className="w-full flex justify-center items-center p-3">
                     <button
-                      onClick={setConfirm}
+                      onClick={() => setApprove(true)}
                       className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white"
                     >
                       Confirm
@@ -1050,7 +1056,7 @@ const Home = () => {
                       </button>
                       <button
                         className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white"
-                        onClick={() => setInstant(true)}
+                        // onClick={onSubmit}
                       >
                         Instant
                       </button>
@@ -1059,7 +1065,7 @@ const Home = () => {
                 ) : (
                   <div className="w-full flex justify-center items-center p-3">
                     <button
-                      onClick={setConfirm1}
+                      onClick={() => setApprove(true)}
                       className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white"
                     >
                       Confirm
@@ -1072,8 +1078,8 @@ const Home = () => {
         </Tab.Group>
 
         <Modal
-          open={instant}
-          onClose={() => setInstant(false)}
+          open={approve}
+          onClose={() => setApprove(false)}
           title="Approve"
           width="[28rem]"
         >
