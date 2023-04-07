@@ -78,6 +78,7 @@ const Home = () => {
   ]);
   const [instant, setInstant] = useState(false);
   const [modal1, setModal1] = useState(false);
+  const [amount1, setAmount1] = useState("");
   const [amount2, setAmount2] = useState("");
   const [range2, setRange2] = useState(0);
   const [confirm, setConfirm] = useState(false);
@@ -159,7 +160,6 @@ const Home = () => {
     setLinks1((products) => products.filter((_, index) => index !== i));
     setCount1(count1 - 1);
   };
-  console.log(tokenInput1, "tokeninput");
 
   const addInput = () => {
     if (count < 5) {
@@ -302,9 +302,8 @@ const Home = () => {
                       </div>
                     </div>
                     <div className="w-full flex flex-col justify-center gap-2">
-                      {links.map((item, i) => {
-                        return (
-                          <div key={i}>
+                      
+                          <div>
                             <>
                               <div className="p-[15px]  bg-[rgba(16,187,53,0.08)] rounded-[10px] gap-2 flex w-full flex-col">
                                 <div className="flex flex-row w-full justify-between items-start ">
@@ -315,17 +314,8 @@ const Home = () => {
                                       placeholder="Select token"
                                       width={80}
                                       name="tokeninput"
-                                      value={item.token}
-                                      onChange={async (event) => {
-                                        const balance = await getBalance(
-                                          event.id
-                                        );
-                                        setLinks((s) => {
-                                          s[i].token = event;
-                                          s[i].balance = balance;
-                                          return [...s];
-                                        });
-                                      }}
+                                      value={tokenInput1}
+                                      onChange={setTokenInput1}
                                     />
                                     <div className="flex flex-row gap-2 justify-start items-center">
                                       <h1 className=" font-normal text-xs text-[rgba(70,70,70,1)]">
@@ -348,15 +338,8 @@ const Home = () => {
                                           type="number"
                                           placeholder="0.0"
                                           name="amount"
-                                          value={item.amount}
-                                          onChange={(e) => {
-                                            setLinks((s) => {
-                                              console.log(s);
-                                              s[i].amount = +e.target.value;
-                                              console.log(s, e.target.value);
-                                              return [...s];
-                                            });
-                                          }}
+                                          value={amount1}
+                                          onChange={setAmount1}
                                           className=" text-[18px] w-[150px]  text-[#464646] focus:outline-none placeholder-shown:text-right text-right py-[10px] px-[10px] justify-end rounded-[8px] flex placeholder-right placeholder-[rgba(70,70,70,0.6)]"
                                         />
                                       </div>
@@ -369,8 +352,6 @@ const Home = () => {
                               </div>
                             </>
                           </div>
-                        );
-                      })}
                     </div>
                   </div>
                   <div>
@@ -992,9 +973,8 @@ const Home = () => {
                       />
                     </div>
                     <div className="w-full flex flex-col justify-center gap-2">
-                      {links1.map((item, i) => {
-                        return (
-                          <div key={i}>
+                      
+                          <div >
                             <>
                               <div className="p-[15px]  bg-[rgba(16,187,53,0.08)] rounded-[10px] gap-2 flex w-full flex-col">
                                 <div className="flex flex-row w-full justify-between items-start ">
@@ -1004,17 +984,8 @@ const Home = () => {
                                       className="flex-[0.5]"
                                       placeholder="Select token"
                                       width={80}
-                                      value={item.token}
-                                      onChange={async (event) => {
-                                        const balance = await getBalance(
-                                          event.id
-                                        );
-                                        setLinks1((s) => {
-                                          s[i].token = event;
-                                          s[i].balance = balance;
-                                          return [...s];
-                                        });
-                                      }}
+                                      value={tokenInput2}
+                                      onChange={setTokenInput2}
                                     />
                                     <div className="flex flex-row gap-2 justify-start items-center">
                                       <h1 className=" font-normal text-xs text-[rgba(70,70,70,1)]">
@@ -1037,8 +1008,6 @@ const Home = () => {
                               </div>
                             </>
                           </div>
-                        );
-                      })}
                     </div>
                   </div>
                 </div>
