@@ -7,6 +7,7 @@ import "../interfaces/OpsTaskCreator.sol";
 
 import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 interface WETH9_ {
     function deposit() external payable;
@@ -36,42 +37,57 @@ contract BulkSwap is OpsTaskCreator {
     uint256 public out;
     address public constant WETH = 0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6;
 
+    AggregatorV3Interface internal priceFeed;
+
+    // constructor() public {
+    //     priceFeed = AggregatorV3Interface(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
+    // }
     constructor(
         IConnext _connext,
         ISwapRouter _swapRouter,
-        address payable _ops
+        address payable _ops,
+        address chainLink
     ) OpsTaskCreator(_ops, msg.sender) {
         connext = _connext;
         swapRouter = _swapRouter;
         owner = msg.sender;
+        priceFeed = AggregatorV3Interface(chainLink);
+    }
+
+    function getLatestPrice() public view returns (int) {
+        (
+            uint80 roundID,
+            int price,
+            uint startedAt,
+            uint timeStamp,
+            uint80 answeredInRound
+        ) = priceFeed.latestRoundData();
+        return price;
     }
 
     function createTask(
         address _token,
-        uint256 amountIn,
-        address payable _recipient,
-        uint256 _interval,
-        uint256 _startTime
+        uint256 amountIn
     ) internal returns (bytes32) {
         bytes memory execData = abi.encodeWithSelector(
             this.swapExactInputSingle.selector,
             _token,
-            amountIn,
-            _recipient
+            amountIn
+            // _recipient
         );
 
         ModuleData memory moduleData = ModuleData({
-            modules: new Module[](3),
-            args: new bytes[](3)
+            modules: new Module[](2),
+            args: new bytes[](2)
         });
 
         moduleData.modules[0] = Module.TIME;
         moduleData.modules[1] = Module.PROXY;
-        moduleData.modules[2] = Module.SINGLE_EXEC;
+        // moduleData.modules[2] = Module.SINGLE_EXEC;
 
-        moduleData.args[0] = _timeModuleArg(_startTime, _interval - 14400);
+        moduleData.args[0] = _timeModuleArg(block.timestamp, 60);
         moduleData.args[1] = _proxyModuleArg();
-        moduleData.args[2] = _singleExecModuleArg();
+        // moduleData.args[2] = _singleExecModuleArg();
 
         bytes32 id = _createTask(address(this), execData, moduleData, ETH);
         return id;
@@ -79,9 +95,14 @@ contract BulkSwap is OpsTaskCreator {
 
     function swapExactInputSingle(
         address _token,
-        uint256 amountIn,
-        address payable _recipient
-    ) external returns (uint256 amountOut) {
+        uint256 amountIn
+    )
+        public
+        returns (
+            // address payable _recipient
+            uint256 amountOut
+        )
+    {
         TransferHelper.safeApprove(_token, address(swapRouter), amountIn);
 
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter
@@ -97,10 +118,11 @@ contract BulkSwap is OpsTaskCreator {
             });
 
         amountOut = swapRouter.exactInputSingle(params);
+        return amountOut;
 
         // address payable recipient  = payable(0x6d4b5acFB1C08127e8553CC41A9aC8F06610eFc7);
-        WETH9_(WETH).withdraw(amountOut);
-        _recipient.transfer(amountOut);
+        // WETH9_(WETH).withdraw(amountOut);
+        // _recipient.transfer(amountOut);
     }
 
     function xTransfer(
@@ -110,16 +132,8 @@ contract BulkSwap is OpsTaskCreator {
         uint256 amount,
         uint256 slippage,
         uint256 relayerFee
-    ) external payable {
+    ) public payable {
         IERC20 token = IERC20(tokenAddress);
-        require(
-            token.allowance(msg.sender, address(this)) >= amount,
-            "User must approve amount"
-        );
-
-        // User sends funds to this contract
-        token.transferFrom(msg.sender, address(this), amount);
-
         // This contract approves transfer to Connext
         token.approve(address(connext), amount);
 
@@ -134,14 +148,61 @@ contract BulkSwap is OpsTaskCreator {
         );
     }
 
+    function executeOrder(
+        address _from,
+        address _to,
+        uint256 _amount,
+        address _fromToken,
+        address _toToken,
+        uint256 _toChain,
+        uint32 destinationDomain,
+        uint256 relayerFee
+    ) external payable {
+        require(_amount > 0, "Amount must be greater than 0");
+        require(_fromToken != _toToken, "From and To tokens must be different");
+        require(_toChain > 0, "To chain must be greater than 0");
+
+        IERC20 token = IERC20(_fromToken);
+
+        require(
+            token.allowance(msg.sender, address(this)) >= _amount,
+            "User must approve amount"
+        );
+
+        // User sends funds to this contract
+        token.transferFrom(msg.sender, address(this), _amount);
+
+        uint256 slippage = 300;
+        // token - weth
+
+        uint256 amountOut = swapExactInputSingle(_fromToken, _amount);
+
+        xTransfer(
+            _to,
+            destinationDomain,
+            WETH,
+            amountOut,
+            slippage,
+            relayerFee
+        );
+
+        emit Action(
+            DepositCounter,
+            "Deposit CREATED & EXECUTED",
+            true,
+            _from,
+            block.timestamp
+        );
+    }
+
     address public owner;
     uint256 public activeDepositCounter = 0;
     uint256 public inactiveDepositCounter = 0;
     uint256 private DepositCounter = 0;
 
-    mapping(uint256 => address) public delDepositOf;
+    // mapping(uint256 => address) public delDepositOf;
     mapping(uint256 => address) public authorOf;
-    mapping(address => uint256) public DepositsOf;
+    mapping(address => uint256[]) public DepositsOf;
 
     struct DepositStruct {
         uint256 DepositId;
@@ -182,7 +243,7 @@ contract BulkSwap is OpsTaskCreator {
     ) external returns (bool) {
         DepositCounter++;
         authorOf[DepositCounter] = _from;
-        DepositsOf[_from]++;
+        DepositsOf[_from].push(DepositCounter);
         activeDepositCounter++;
 
         activeDeposits.push(
@@ -211,33 +272,11 @@ contract BulkSwap is OpsTaskCreator {
         return true;
     }
 
-    // function updateDeposit(
-    //     uint256 DepositId,
-    //     address _to,
-    //     uint256 _amount,
-    //     address _fromToken,
-    //     address _toToken
-    // ) external returns (bool) {
-    //     require(authorOf[DepositId] == msg.sender, "Unauthorized entity");
-
-    //     for (uint i = 0; i < activeDeposits.length; i++) {
-    //         if (activeDeposits[i].DepositId == DepositId) {
-    //             activeDeposits[i].title = title;
-    //             activeDeposits[i].description = description;
-    //             activeDeposits[i].updated = block.timestamp;
-    //         }
-    //     }
-
-    //     emit Action(
-    //         DepositId,
-    //         "Deposit UPDATED",
-    //         Deactivated.NO,
-    //         msg.sender,
-    //         block.timestamp
-    //     );
-
-    //     return true;
-    // }
+    function showDepositsOfUser(
+        address _user
+    ) external view returns (uint256[] memory) {
+        return DepositsOf[_user];
+    }
 
     function showDeposit(
         uint256 DepositId
@@ -264,6 +303,12 @@ contract BulkSwap is OpsTaskCreator {
         return inactiveDeposits;
     }
 
+    function removeElement(address key, uint index) internal {
+        require(index < DepositsOf[key].length);
+        DepositsOf[key][index] = DepositsOf[key][DepositsOf[key].length - 1];
+        DepositsOf[key].pop();
+    }
+
     function deleteDeposit(
         uint256 DepositId,
         address _from
@@ -275,13 +320,12 @@ contract BulkSwap is OpsTaskCreator {
                 activeDeposits[i].isActive = false;
                 activeDeposits[i].updated = block.timestamp;
                 inactiveDeposits.push(activeDeposits[i]);
-                delDepositOf[DepositId] = authorOf[DepositId];
+                // delDepositOf[DepositId] = authorOf[DepositId];
                 delete activeDeposits[i];
                 delete authorOf[DepositId];
             }
         }
-
-        DepositsOf[_from]--;
+        removeElement(_from, DepositId);
         inactiveDepositCounter++;
         activeDepositCounter--;
 

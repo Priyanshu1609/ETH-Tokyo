@@ -51,6 +51,12 @@ export const coins = [
     decimals: 18,
     icon: "https://www.xdefi.io/wp-content/uploads/2022/05/favicon.png",
   },
+  {
+    id: "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6",
+    name: "WETH",
+    decimals: 18,
+    icon: "https://static.optimism.io/data/WETH/logo.png",
+  },
 ];
 const Home = () => {
   const Web3 = require("web3");
@@ -106,15 +112,32 @@ const Home = () => {
       stateMutability: "view",
       type: "function",
     },
+    {
+      constant: true,
+      inputs: [],
+      name: "decimals",
+      outputs: [
+        {
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      payable: false,
+      stateMutability: "view",
+      type: "function"
+    },
   ];
 
 
-  
+
 
   const getBalance = async (token) => {
     const web3 = new Web3(new Web3.providers.HttpProvider(provider));
-  const contract = new web3.eth.Contract(abi, token);
+    const contract = new web3.eth.Contract(abi, token);
     const res = await contract.methods.balanceOf(address).call();
+    const dec = await contract.methods.decimals().call();
+
+    return res / (10 ** dec);
     const format = web3.utils.fromWei(res);
     return (format.toString() * 10 ** 12);
   };
@@ -127,20 +150,20 @@ const Home = () => {
     setBalance1(format.toString() * 10 ** 12);
   };
 
-//   useEffect(() => {
-//     console.log(links)
-//     links.forEach(async (link, index)=>{
-//       if(link.token && link.token.id) {
-//         const balance = await getBalance(link.token.id);
-//         setLinks(s=> {
-//           s[index].balance = balance;
-//           return [...s]
-//         })
-//       }
-//     })
-//     getBalance1();
-// }, [links, tokenInput2?.id]);
-  
+  //   useEffect(() => {
+  //     console.log(links)
+  //     links.forEach(async (link, index)=>{
+  //       if(link.token && link.token.id) {
+  //         const balance = await getBalance(link.token.id);
+  //         setLinks(s=> {
+  //           s[index].balance = balance;
+  //           return [...s]
+  //         })
+  //       }
+  //     })
+  //     getBalance1();
+  // }, [links, tokenInput2?.id]);
+
 
   console.log(links, "links");
 
@@ -215,20 +238,20 @@ const Home = () => {
   }
   function split2() {
     console.log(links1)
-    const equalWeightedRange = Math.floor(100/links1.length);
-    const fullRangeUtilized = (equalWeightedRange*links1.length===100 ? true : false) 
+    const equalWeightedRange = Math.floor(100 / links1.length);
+    const fullRangeUtilized = (equalWeightedRange * links1.length === 100 ? true : false)
     setLinks1((s) => {
       s.forEach((link, index) => {
         console.log(link, index);
-        if(index===0 && equalWeightedRange*links1.length!==100) {
-          link.range = equalWeightedRange+1;
+        if (index === 0 && equalWeightedRange * links1.length !== 100) {
+          link.range = equalWeightedRange + 1;
         } else {
           link.range = equalWeightedRange;
         }
       })
       console.log(s)
       return [...s];
-    }); 
+    });
   }
   function split1() {
     // if (count % 2 === 0) {
@@ -237,22 +260,22 @@ const Home = () => {
     //   setRange1(100 / count);
     // }
     console.log(links)
-    const equalWeightedRange = Math.floor(100/links.length);
-    const fullRangeUtilized = (equalWeightedRange*links.length===100 ? true : false) 
+    const equalWeightedRange = Math.floor(100 / links.length);
+    const fullRangeUtilized = (equalWeightedRange * links.length === 100 ? true : false)
     setLinks((s) => {
       s.forEach((link, index) => {
         console.log(link, index);
-        if(index===0 && equalWeightedRange*links.length!==100) {
-          link.range = equalWeightedRange+1;
+        if (index === 0 && equalWeightedRange * links.length !== 100) {
+          link.range = equalWeightedRange + 1;
         } else {
           link.range = equalWeightedRange;
         }
       })
       console.log(s)
       return [...s];
-    }); 
+    });
   }
-  
+
   return (
     <div className="flex justify-center items-center w-full pt-6  ">
       <div className="flex flex-col justify-center items-center py-4 px-5  gap-3 bg-white rounded-2xl">
@@ -314,7 +337,7 @@ const Home = () => {
                                   s[i].balance = balance
                                   return [...s];
                                 });
-                                
+
                               }}
                             />
                             <div className="flex flex-row gap-2 justify-start items-center">
@@ -551,9 +574,9 @@ const Home = () => {
             <div className="flex flex-row justify-between gap-auto items-center w-full">
               <div className="flex flex-row items-center gap-2">
                 <h1 className="font-normal text-sm text-center text-[#637592]">
-                  From --
+                  To --
                 </h1>
-                <div className="flex flex-row items-center gap-[18px]">
+                {chainInput2?.icon && <div className="flex flex-row items-center gap-[18px]">
                   <img
                     src={chainInput2?.icon}
                     alt="icon"
@@ -562,7 +585,7 @@ const Home = () => {
                   <h1 className="text-sm text-center text-[#464646] font-semibold">
                     {chainInput2?.name}
                   </h1>
-                </div>
+                </div>}
               </div>
               <Selecttoken
                 options={Chains}
@@ -594,7 +617,7 @@ const Home = () => {
                                   s[i].balance = balance
                                   return [...s];
                                 });
-                                
+
                               }}
                             />
                             <div className="flex flex-row gap-2 justify-start items-center">
@@ -602,7 +625,7 @@ const Home = () => {
                                 Current Balance:
                               </h1>
                               <h1 className="font-semibold text-sm text-primary-green">
-                              {item.balance}
+                                {item.balance}
                               </h1>
                             </div>
                           </div>

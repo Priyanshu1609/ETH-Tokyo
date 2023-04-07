@@ -16,8 +16,8 @@ module.exports = {
   networks: {
     hardhat: {
       forking: {
-        url: process.env.ALCHEMY_POLYGON_API_URL,
-        blockNumber: 40107284
+        url: process.env.ALCHEMY_GOERLI_API_URL,
+        blockNumber: 8747687
       }
     },
     goerli: {
@@ -38,8 +38,8 @@ module.exports = {
     },
   },
   etherscan: {
-    // apiKey: process.env.ETHERSCAN_API_KEY
-    apiKey: process.env.POLYGONSCAN_API_KEY
+    apiKey: process.env.ETHERSCAN_API_KEY
+    // apiKey: process.env.POLYGONSCAN_API_KEY
   },
   polygonscan: {
     apiKey: process.env.POLYGONSCAN_API_KEY
