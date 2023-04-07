@@ -236,9 +236,9 @@ const complete = () => {
             <div className="w-9 h-[5px] bg-primary-green " />
             <div className="w-9 h-[5px] bg-primary-green rounded-r-sm" />
           </div>
-          <div className="flex flex-row items-start gap-[10px] w-full">
+          <div className="flex flex-row items-center justify-center gap-[10px] w-full">
             <a href="">
-            <button className="bg-[rgba(16,187,53,0.08)] py-[10px] px-[20px] flex flex-row justify-center items-center w-full  rounded-lg font-semibold text-base text-[#464646]">
+            <button className="bg-[rgba(16,187,53,0.08)] py-[10px]  px-[20px] flex flex-row justify-center items-center  rounded-lg font-semibold text-base text-[#464646]">
               <svg
                 width="25"
                 height="25"
@@ -285,7 +285,7 @@ const complete = () => {
               
             <button 
             // onClick={onSubmit}
-            className="bg-primary-green py-[10px] px-[20px] w-full rounded-lg font-semibold text-base text-white">
+            className="bg-primary-green py-[10px] px-[20px]  rounded-lg font-semibold text-base text-white">
               Make Another Trade
             </button>
             

@@ -113,6 +113,26 @@ const Home = () => {
       type: "function",
     },
   ];
+  useEffect(()=>{
+    getBalance1();
+    getBalance2();
+  },[tokenInput1?.id,tokenInput2?.id])
+  const getBalance1 = async () => {
+    const web3 = new Web3(new Web3.providers.HttpProvider(provider));
+    const contract1 = new web3.eth.Contract(abi, tokenInput1?.id);
+    const res = await contract1.methods.balanceOf(address).call();
+    const format = web3.utils.fromWei(res);
+    console.log(format);
+    setBalance(format.toString() * 10 ** 12);
+  };
+  const getBalance2 = async (token) => {
+    const web3 = new Web3(new Web3.providers.HttpProvider(provider));
+    const contract1 = new web3.eth.Contract(abi, tokenInput2?.id);
+    const res = await contract1.methods.balanceOf(address).call();
+    const format = web3.utils.fromWei(res);
+    console.log(format);
+    setBalance1(format.toString() * 10 ** 12);
+  };
 
   const getBalance = async (token) => {
     const web3 = new Web3(new Web3.providers.HttpProvider(provider));
@@ -322,7 +342,7 @@ const Home = () => {
                                         Current Balance:
                                       </h1>
                                       <h1 className="font-semibold text-sm text-primary-green">
-                                        {item.balance}
+                                        {balance}
                                       </h1>
                                     </div>
                                   </div>
@@ -992,7 +1012,7 @@ const Home = () => {
                                         Current Balance:
                                       </h1>
                                       <h1 className="font-semibold text-sm text-primary-green">
-                                        {item.balance}
+                                        {balance1}
                                       </h1>
                                     </div>
                                   </div>
