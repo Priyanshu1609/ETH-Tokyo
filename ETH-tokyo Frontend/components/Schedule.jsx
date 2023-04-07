@@ -2,7 +2,7 @@ import { Tab } from "@headlessui/react";
 import React, { useState } from "react";
 import Selecttoken from "./Selecttoken";
 import Time from "./Time"
-export const time = [
+export const times = [
   { id: "hours", name: "Hours", decimals: 3600 },
   { id: "days", name: "Days", decimals: 86400 },
   { id: "weeks", name: "Weeks", decimals: 604800 },
@@ -43,7 +43,7 @@ export const coins = [
 ];
 
 const Schedule = () => {
-  const [time, setTime] = useState({});
+  const [time, setTime] = useState([]);
   const [Frequency, setFrequency] = useState(0);
   const [token, setToken] = useState({});
   const [triggerprice, setTriggerprice] = useState(0);
@@ -52,11 +52,11 @@ const Schedule = () => {
     <div classname="flex flex-col justify-start items-start w-full ">
       <div className="flex flex-col items-center px-[15px] py-[10px] w-full bg-[rgba(16,187,53,0.12)] ">
         <Tab.Group>
-          <Tab.List className="flex flex-row items-start py-[10px] px-[30px]  gap-[12px] w-full">
+          <Tab.List className="flex flex-row justify-start items-center py-[10px] px-[5px] w-full  gap-[12px] bg-white rounded-lg">
             <Tab className="hover:bg-[#10bb35] hover:text-white bg-white rounded-md text-[#464646] font-normal text-sm  py-[10px] px-[10px] flex justify-center items-center">Time Schedule</Tab>
             <Tab className="hover:bg-[#10bb35] hover:text-white bg-white rounded-md text-[#464646] font-normal text-sm  py-[10px] px-[10px] flex justify-center items-center">Price schedule</Tab>
           </Tab.List>
-          <Tab.Panels clasName="w-full h-full p-0">
+          <Tab.Panels clasName="w-full">
             <Tab.Panel className="flex flex-col items-start p-[15px] gap-[15px]  w-full">
               <div className="flex  justify-start items-center w-full">
                 <h1 classname="font-normal text-sm flex items-center text-[#464646] w-full">
@@ -65,10 +65,10 @@ const Schedule = () => {
               </div>
               <div className="flex flex-row justify-between items-center p-[20px] gap-[15px] bg-white rounded-[10px] w-full">
               <Time
-                    options={time}
+                    options={times}
                     className="flex-[0.5]"
-                    placeholder="Select token"
-                    width={80}
+                    placeholder="Select time"
+                    width={60}
                     name="time"
                     value={time}
                     onChange={setTime}
@@ -78,10 +78,10 @@ const Schedule = () => {
                   placeholder="Enter total number of cycles"
                   name="Frequency"
                   value={Frequency}
-                  onChange={() => {
+                  onChange={(e) => {
                     setFrequency(e.target.value);
                   }}
-                  className=" text-[18px] w-[150px] text-[#464646] focus:outline-none  placeholder-shown:text-right text-right py-[10px] px-[10px] justify-end rounded-[8px] flex placeholder-right placeholder-[rgba(70,70,70,0.6)]"
+                  className=" text-[18px] w-[240px] text-[#464646] focus:outline-none  placeholder-shown:text-right text-right py-[10px] px-[10px] justify-end rounded-[8px] flex placeholder-right placeholder-[rgba(70,70,70,0.6)]"
                 />
               </div>
               <div className="flex flex-col items-end gap-[10px] w-full">
@@ -90,7 +90,7 @@ const Schedule = () => {
                 </button>
               </div>
             </Tab.Panel>
-            <Tab.Panel className="flex flex-col items-start py-[20px] gap-[15px] h-full w-full">
+            <Tab.Panel className="flex flex-col items-start py-[20px] gap-[15px] h-full w-[435px]">
               <div className="flex  justify-start items-center w-full">
                 <h1 classname="font-normal text-sm flex items-center text-[#464646]">
                   Schedule to swap all based on token price.
