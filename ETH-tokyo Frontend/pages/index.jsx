@@ -7,6 +7,7 @@ import Error from "../components/Error";
 import Trade from "../components/Trade";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
+import Schedule from "../components/Schedule"
 
 export const Chains = [
   {
@@ -58,6 +59,8 @@ const Home = () => {
   const [chainInput2, setChainInput2] = useState([]);
   const [tokenInput1, setTokenInput1] = useState([]);
   const [tokenInput2, setTokenInput2] = useState([]);
+  const [coinprice,setCoinprice] =useState(0);
+  const [schedule, setSchedule] = useState(false);
   const [links, setLinks] = useState([
     {
       token: null,
@@ -72,7 +75,7 @@ const Home = () => {
       range: 0,
     },
   ]);
-  const [modal, setModal] = useState(false);
+  const [instant, setInstant] = useState(false);
   const [modal1, setModal1] = useState(false);
   const [amount2, setAmount2] = useState("");
   const [range2, setRange2] = useState(0);
@@ -118,14 +121,7 @@ const Home = () => {
     const format = web3.utils.fromWei(res);
     return (format.toString() * 10 ** 12);
   };
-  const getBalance1 = async (token) => {
-    const web3 = new Web3(new Web3.providers.HttpProvider(provider));
-    const contract1 = new web3.eth.Contract(abi, token);
-    const res = await contract1.methods.balanceOf(address).call();
-    const format = web3.utils.fromWei(res);
-    console.log(format);
-    setBalance1(format.toString() * 10 ** 12);
-  };
+  
 
 //   useEffect(() => {
 //     console.log(links)
@@ -551,7 +547,7 @@ const Home = () => {
             <div className="flex flex-row justify-between gap-auto items-center w-full">
               <div className="flex flex-row items-center gap-2">
                 <h1 className="font-normal text-sm text-center text-[#637592]">
-                  From --
+                  To --
                 </h1>
                 <div className="flex flex-row items-center gap-[18px]">
                   <img
@@ -607,29 +603,9 @@ const Home = () => {
                             </div>
                           </div>
                           <div className="flex flex-col  w-[300px]">
-                            <div className="w-[300px]  border border-[rgba(0,0,0,0.1)] bg-white  rounded-[8px] items-center justify-between  flex">
-                              <div className="pl-2">
-                                <button className="bg-primary-green py-[5px] px-[15px] gap-[7px] rounded-md font-semibold text-base text-white">
-                                  Max
-                                </button>
-                              </div>
-                              <div>
-                                <input
-                                  type="number"
-                                  placeholder="0.0"
-                                  value={item.amount}
-                                  onChange={(e) => {
-                                    setLinks1((s) => {
-                                      console.log(s);
-                                      s[i].amount = +e.target.value;
-                                      console.log(s, e.target.value);
-                                      return [...s];
-                                    });
-                                  }}
-                                  className=" text-[18px] w-[150px]  text-[#464646] focus:outline-none placeholder-shown:text-right text-right py-[10px] px-[10px] justify-end rounded-[8px] flex placeholder-right placeholder-[rgba(70,70,70,0.6)]"
-                                />
-                              </div>
-                            </div>
+                          <h1 className="w-full text-right font-medium text-xl text-[#464646]">
+                              {coinprice}
+                            </h1>
                             <h1 className="w-full text-right font-medium text-sm text-[#464646]">
                               =$ 0.00
                             </h1>
@@ -780,20 +756,28 @@ const Home = () => {
         {confirm ? (
           <div className="flex flex-col justify-center items-center w-full gap-2">
             <Trade />
-            <div className="flex flex-col justify-center items-center gap-3">
+            
               <div className="flex flex-row justify-center items-center gap-2">
                 <div className="w-9 h-[5px] bg-primary-green rounded-l-sm" />
                 <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] " />
                 <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] " />
                 <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] rounded-r-sm" />
               </div>
+              <div className="flex flex-row justify-center items-center w-full gap-4">
+              <button
+                className="bg-[rgba(16,187,53,0.12)] py-[10px] px-[30px]  rounded-lg font-semibold text-base text-[#464646]"
+                onClick={() => setSchedule
+                  (true)}
+              >
+                Schedule
+              </button>
               <button
                 className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white"
-                onClick={() => setModal(true)}
+                onClick={() => setInstant(true)}
               >
-                Confirm
+                Instant
               </button>
-            </div>
+              </div>
           </div>
         ) : (
           <button
@@ -806,8 +790,8 @@ const Home = () => {
       </div>
 
       <Modal
-        open={modal}
-        onClose={() => setModal(false)}
+        open={instant}
+        onClose={() => setInstant(false)}
         title="Approve"
         width="[28rem]"
       >
@@ -818,8 +802,17 @@ const Home = () => {
         onClose={() => setModal1(false)}
         title="Error"
         width="[28rem]"
+        height="[40rem]"
       >
-        <Error text={"You must have atleast one commitee member"} />
+        <Error text={"You must have atleast one swap"} />
+      </Modal>
+      <Modal
+        open={schedule}
+        onClose={() => setSchedule(false)}
+        title="Schedule"
+        width="[28rem]"
+      >
+        <Schedule />
       </Modal>
     </div>
   );

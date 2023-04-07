@@ -12,8 +12,12 @@ const SideBar = ({}) => {
   }, []);
   return (
     <div className="h-full block w-[300px] border-r-[1px] py-6 px-5 bg-white ">
-      <Image src="/Autopaylogo.png" height={55} width={165.55} />
-      <ConnectWalletCustom />
+      <div className="pb-4 pt-2">
+        <Image src="/Autopaylogo.png" height={55} width={165.55} />
+      </div>
+      <div>
+        <ConnectWalletCustom />
+      </div>
       <ul className="flex flex-col list-none cursor-pointer py-4 gap-[10px] h-[1000px] ">
         <Link href="/">
           <div
