@@ -7,7 +7,8 @@ import Error from "../components/Error";
 import Trade from "../components/Trade";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
-import Schedule from "../components/Schedule"
+import Schedule from "../components/Schedule";
+import { Tab } from "@headlessui/react";
 
 export const Chains = [
   {
@@ -59,7 +60,7 @@ const Home = () => {
   const [chainInput2, setChainInput2] = useState([]);
   const [tokenInput1, setTokenInput1] = useState([]);
   const [tokenInput2, setTokenInput2] = useState([]);
-  const [coinprice,setCoinprice] =useState(0);
+  const [coinprice, setCoinprice] = useState(0);
   const [schedule, setSchedule] = useState(false);
   const [links, setLinks] = useState([
     {
@@ -80,6 +81,7 @@ const Home = () => {
   const [amount2, setAmount2] = useState("");
   const [range2, setRange2] = useState(0);
   const [confirm, setConfirm] = useState(false);
+  const [confirm1, setConfirm1] = useState(false);
   const [multiinput, setMultiinput] = useState(0);
   const [multiinput1, setMultiinput1] = useState(0);
 
@@ -111,32 +113,27 @@ const Home = () => {
     },
   ];
 
-
-  
-
   const getBalance = async (token) => {
     const web3 = new Web3(new Web3.providers.HttpProvider(provider));
-  const contract = new web3.eth.Contract(abi, token);
+    const contract = new web3.eth.Contract(abi, token);
     const res = await contract.methods.balanceOf(address).call();
     const format = web3.utils.fromWei(res);
-    return (format.toString() * 10 ** 12);
+    return format.toString() * 10 ** 12;
   };
-  
 
-//   useEffect(() => {
-//     console.log(links)
-//     links.forEach(async (link, index)=>{
-//       if(link.token && link.token.id) {
-//         const balance = await getBalance(link.token.id);
-//         setLinks(s=> {
-//           s[index].balance = balance;
-//           return [...s]
-//         })
-//       }
-//     })
-//     getBalance1();
-// }, [links, tokenInput2?.id]);
-  
+  //   useEffect(() => {
+  //     console.log(links)
+  //     links.forEach(async (link, index)=>{
+  //       if(link.token && link.token.id) {
+  //         const balance = await getBalance(link.token.id);
+  //         setLinks(s=> {
+  //           s[index].balance = balance;
+  //           return [...s]
+  //         })
+  //       }
+  //     })
+  //     getBalance1();
+  // }, [links, tokenInput2?.id]);
 
   console.log(links, "links");
 
@@ -210,21 +207,22 @@ const Home = () => {
     setCount1(count1 + 1);
   }
   function split2() {
-    console.log(links1)
-    const equalWeightedRange = Math.floor(100/links1.length);
-    const fullRangeUtilized = (equalWeightedRange*links1.length===100 ? true : false) 
+    console.log(links1);
+    const equalWeightedRange = Math.floor(100 / links1.length);
+    const fullRangeUtilized =
+      equalWeightedRange * links1.length === 100 ? true : false;
     setLinks1((s) => {
       s.forEach((link, index) => {
         console.log(link, index);
-        if(index===0 && equalWeightedRange*links1.length!==100) {
-          link.range = equalWeightedRange+1;
+        if (index === 0 && equalWeightedRange * links1.length !== 100) {
+          link.range = equalWeightedRange + 1;
         } else {
           link.range = equalWeightedRange;
         }
-      })
-      console.log(s)
+      });
+      console.log(s);
       return [...s];
-    }); 
+    });
   }
   function split1() {
     // if (count % 2 === 0) {
@@ -232,39 +230,54 @@ const Home = () => {
     // } else {
     //   setRange1(100 / count);
     // }
-    console.log(links)
-    const equalWeightedRange = Math.floor(100/links.length);
-    const fullRangeUtilized = (equalWeightedRange*links.length===100 ? true : false) 
+    console.log(links);
+    const equalWeightedRange = Math.floor(100 / links.length);
+    const fullRangeUtilized =
+      equalWeightedRange * links.length === 100 ? true : false;
     setLinks((s) => {
       s.forEach((link, index) => {
         console.log(link, index);
-        if(index===0 && equalWeightedRange*links.length!==100) {
-          link.range = equalWeightedRange+1;
+        if (index === 0 && equalWeightedRange * links.length !== 100) {
+          link.range = equalWeightedRange + 1;
         } else {
           link.range = equalWeightedRange;
         }
-      })
-      console.log(s)
+      });
+      console.log(s);
       return [...s];
-    }); 
+    });
   }
-  
+
   return (
-    <div className="flex justify-center items-center w-full pt-6  ">
+    <div className="flex flex-col justify-center items-center w-full pt-6  ">
       <div className="flex flex-col justify-center items-center py-4 px-5  gap-3 bg-white rounded-2xl">
-        <div className="flex flex-col items-center  gap-2">
-          <div className="flex flex-col items-start  py-3 gap-[5px] rounded-lg w-[698px]">
-            <h1 className="font-semibold text-sm text-[rgba(70, 70, 70, 0.9)]">
-              You sell
-            </h1>
-          </div>
-          <div className="flex flex-col justify-center items-center p-4 gap-5 border rounded-[10px] border-[rgba(70,70,70,0.2)] w-full">
-            <div className="flex flex-row justify-end gap-2 items-center w-full">
-              <div className="flex flex-row items-center gap-2">
-                <h1 className="font-normal text-sm text-center text-[#637592]">
-                  From --
-                </h1>
-                {/*<div className="flex flex-row items-center gap-[18px]">
+        <Tab.Group>
+          <Tab.List className="w-full flex justify-center items-center ">
+            <div className="bg-[rgba(16,187,53,0.08)] flex flex-row gap-3 justify-center items-center py-4 px-10 rounded-xl">
+              <Tab className="hover:bg-[white] hover:text-[#10bb35] text-[#464646] py-2 px-4 text-lg rounded-lg focus:outline-none ">
+                1 to many
+              </Tab>
+              <Tab className="hover:bg-[white] hover:text-[#10bb35] text-[#464646] py-2 px-4 text-lg rounded-lg focus:outline-none">
+                many to 1
+              </Tab>
+            </div>
+          </Tab.List>
+          <Tab.Panels>
+            <Tab.Panel>
+              <div classname="gap-3 flex flex-col justify-center items-center">
+                <div className="flex flex-col items-center  gap-2">
+                  <div className="flex flex-col items-start  py-3 gap-[5px] rounded-lg w-[698px]">
+                    <h1 className="font-semibold text-sm text-[rgba(70, 70, 70, 0.9)]">
+                      You sell
+                    </h1>
+                  </div>
+                  <div className="flex flex-col justify-center items-center p-4 gap-5 border rounded-[10px] border-[rgba(126,109,109,0.2)] w-full">
+                    <div className="flex flex-row justify-end gap-2 items-center w-full">
+                      <div className="flex flex-row items-center gap-2">
+                        <h1 className="font-normal text-sm text-center text-[#637592]">
+                          From --
+                        </h1>
+                        {/*<div className="flex flex-row items-center gap-[18px]">
                   <img
                     src={chainInput1?.icon}
                     alt="icon"
@@ -274,546 +287,827 @@ const Home = () => {
                     {chainInput1?.name}
                   </h1>
                 </div> */}
-              </div>
-              <div className="connect-wallet">
-                <ConnectButton
-                  accountStatus={{
-                    smallScreen: "avatar",
-                    largeScreen: "full",
-                  }}
-                  showBalance={{
-                    smallScreen: false,
-                    largeScreen: true,
-                  }}
-                />
-              </div>
-            </div>
-            <div className="w-full flex flex-col justify-center gap-2">
-              {links.map((item, i) => {
-                return (
-                  <div key={i}>
-                    <>
-                      <div className="p-[15px]  bg-[rgba(16,187,53,0.08)] rounded-[10px] gap-2 flex w-full flex-col">
-                        <div className="flex flex-row w-full justify-between items-start ">
-                          <div className="flex flex-col justify-start  w-[300px]">
-                            <Selecttoken
-                              options={coins}
-                              className="flex-[0.5]"
-                              placeholder="Select token"
-                              width={80}
-                              name="tokeninput"
-                              value={item.token}
-                              onChange={async (event) => {
-                                const balance = await getBalance(event.id);
-                                setLinks((s) => {
-                                  s[i].token = event;
-                                  s[i].balance = balance
-                                  return [...s];
-                                });
-                                
-                              }}
-                            />
-                            <div className="flex flex-row gap-2 justify-start items-center">
-                              <h1 className=" font-normal text-xs text-[rgba(70,70,70,1)]">
-                                Current Balance:
-                              </h1>
-                              <h1 className="font-semibold text-sm text-primary-green">
-                                {item.balance}
-                              </h1>
-                            </div>
-                          </div>
-                          <div className="flex flex-col  w-[300px]">
-                            <div className="w-[300px]  border border-[rgba(0,0,0,0.1)] bg-white  rounded-[8px] items-center justify-between  flex">
-                              <div className="pl-2">
-                                <button className="bg-primary-green py-[5px] px-[15px] gap-[7px] rounded-md font-semibold text-base text-white">
-                                  Max
-                                </button>
-                              </div>
-                              <div>
-                                <input
-                                  type="number"
-                                  placeholder="0.0"
-                                  name="amount"
-                                  value={item.amount}
-                                  onChange={(e) => {
-                                    setLinks((s) => {
-                                      console.log(s);
-                                      s[i].amount = +e.target.value;
-                                      console.log(s, e.target.value);
-                                      return [...s];
-                                    });
-                                  }}
-                                  className=" text-[18px] w-[150px]  text-[#464646] focus:outline-none placeholder-shown:text-right text-right py-[10px] px-[10px] justify-end rounded-[8px] flex placeholder-right placeholder-[rgba(70,70,70,0.6)]"
-                                />
-                              </div>
-                            </div>
-                            <h1 className="w-full text-right font-medium text-sm text-[#464646]">
-                              =$ 0.00
-                            </h1>
-                          </div>
-                          {multiinput === 1 ? (
-                            <button
-                              className="flex flex-row items-start p-2 gap-[10px] bg-white rounded-full"
-                              onClick={(e) => handleRemove(i)}
-                            >
-                              <svg
-                                width="12"
-                                height="12"
-                                viewBox="0 0 12 12"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M1 11.0625L11 1.0625"
-                                  stroke="#464646"
-                                  stroke-width="1.5"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                />
-                                <path
-                                  d="M1 1.0625L11 11.0625"
-                                  stroke="#464646"
-                                  stroke-width="1.5"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                />
-                              </svg>
-                            </button>
-                          ) : (
-                            <div className="hidden"></div>
-                          )}
-                        </div>
-                        {multiinput === 1 ? (
-                          <div className="flex flex-row justify-center items-center gap-[10px]">
-                            <input
-                              className="rounded-md overflow-hidden appearance-none bg-gray-400 h-2 w-full"
-                              value={item.range}
-                              onChange={(e) => {
-                                setLinks((s) => {
-                                  console.log(s);
-                                  s[i].range = +e.target.value;
-                                  console.log(s, e.target.value);
-                                  return [...s];
-                                });
-                              }}
-                              type="range"
-                              min="1"
-                              max="100"
-                              step="1"
-                            />
-                            <input
-                              type="text"
-                              placeholder={item.range}
-                              value={item.range}
-                              onChange={(e) => {
-                                setLinks((s) => {
-                                  console.log(s);
-                                  s[i].range = +e.target.value;
-                                  console.log(s, e.target.value);
-                                  return [...s];
-                                });
-                              }}
-                              className=" text-[18px] w-[100px] text-[#464646] focus:outline-none placeholder-shown:text-right text-right py-[10px] px-[10px] justify-end rounded-[8px] flex placeholder-right placeholder-[rgba(70,70,70,0.6)]"
-                            />
-                          </div>
-                        ) : (
-                          <div className="hidden"></div>
-                        )}
                       </div>
-                    </>
+                      <div className="connect-wallet">
+                        <ConnectButton
+                          accountStatus={{
+                            smallScreen: "avatar",
+                            largeScreen: "full",
+                          }}
+                          showBalance={{
+                            smallScreen: false,
+                            largeScreen: true,
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="w-full flex flex-col justify-center gap-2">
+                      {links.map((item, i) => {
+                        return (
+                          <div key={i}>
+                            <>
+                              <div className="p-[15px]  bg-[rgba(16,187,53,0.08)] rounded-[10px] gap-2 flex w-full flex-col">
+                                <div className="flex flex-row w-full justify-between items-start ">
+                                  <div className="flex flex-col justify-start  w-[300px]">
+                                    <Selecttoken
+                                      options={coins}
+                                      className="flex-[0.5]"
+                                      placeholder="Select token"
+                                      width={80}
+                                      name="tokeninput"
+                                      value={item.token}
+                                      onChange={async (event) => {
+                                        const balance = await getBalance(
+                                          event.id
+                                        );
+                                        setLinks((s) => {
+                                          s[i].token = event;
+                                          s[i].balance = balance;
+                                          return [...s];
+                                        });
+                                      }}
+                                    />
+                                    <div className="flex flex-row gap-2 justify-start items-center">
+                                      <h1 className=" font-normal text-xs text-[rgba(70,70,70,1)]">
+                                        Current Balance:
+                                      </h1>
+                                      <h1 className="font-semibold text-sm text-primary-green">
+                                        {item.balance}
+                                      </h1>
+                                    </div>
+                                  </div>
+                                  <div className="flex flex-col  w-[300px]">
+                                    <div className="w-[300px]  border border-[rgba(0,0,0,0.1)] bg-white  rounded-[8px] items-center justify-between  flex">
+                                      <div className="pl-2">
+                                        <button className="bg-primary-green py-[5px] px-[15px] gap-[7px] rounded-md font-semibold text-base text-white">
+                                          Max
+                                        </button>
+                                      </div>
+                                      <div>
+                                        <input
+                                          type="number"
+                                          placeholder="0.0"
+                                          name="amount"
+                                          value={item.amount}
+                                          onChange={(e) => {
+                                            setLinks((s) => {
+                                              console.log(s);
+                                              s[i].amount = +e.target.value;
+                                              console.log(s, e.target.value);
+                                              return [...s];
+                                            });
+                                          }}
+                                          className=" text-[18px] w-[150px]  text-[#464646] focus:outline-none placeholder-shown:text-right text-right py-[10px] px-[10px] justify-end rounded-[8px] flex placeholder-right placeholder-[rgba(70,70,70,0.6)]"
+                                        />
+                                      </div>
+                                    </div>
+                                    <h1 className="w-full text-right font-medium text-sm text-[#464646]">
+                                      =$ 0.00
+                                    </h1>
+                                  </div>
+                                </div>
+                              </div>
+                            </>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                );
-              })}
-            </div>
-            {multiinput === 1 ? (
-              <div className="flex flex-row w-full justify-between items-center">
-                <button
-                  onClick={addInput}
-                  className="bg-primary-green py-[5px] px-[15px] gap-[7px] rounded-md font-semibold text-base text-white flex flex-row items-center"
-                >
-                  <svg
-                    width="17"
-                    height="18"
-                    viewBox="0 0 17 18"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M1.487 9.03125H15.5495"
-                      stroke="white"
-                      stroke-width="2.34375"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M8.51825 2L8.51825 16.0625"
-                      stroke="white"
-                      stroke-width="2.34375"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                  Add
-                </button>
-                <button
-                  onClick={() => split1()}
-                  className=" py-[5px] px-2  gap-[7px] rounded-md font-semibold text-sm text-[#464646] flex flex-row items-end border border-white hover:border-[#10BB35] hover:bg-[rgba(16,187,53,0.12)] "
-                >
-                  % Split Evenly
-                </button>
-              </div>
-            ) : (
-              <button
-                className="bg-primary-green py-[5px] px-[15px] gap-[7px] rounded-md font-semibold text-base text-white flex flex-row items-center"
-                onClick={addInput}
-              >
-                <svg
-                  width="17"
-                  height="18"
-                  viewBox="0 0 17 18"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M1.487 9.03125H15.5495"
-                    stroke="white"
-                    stroke-width="2.34375"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M8.51825 2L8.51825 16.0625"
-                    stroke="white"
-                    stroke-width="2.34375"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-                Add
-              </button>
-            )}
-          </div>
-          <div>
-            <svg
-              width="36"
-              height="36"
-              viewBox="0 0 36 36"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10.5 13.0625L12.7929 10.7696C13.1834 10.3791 13.8166 10.3791 14.2071 10.7696L16.5 13.0625"
-                stroke="#464646"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              />
-              <path
-                d="M13.5 14.0625V16.3125V18.5625V23.0625"
-                stroke="#464646"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              />
-              <path
-                d="M19.5 22.0625L21.7929 24.3554C22.1834 24.7459 22.8166 24.7459 23.2071 24.3554L25.5 22.0625"
-                stroke="#464646"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              />
-              <path
-                d="M22.5 21.0625L22.5 12.0625"
-                stroke="#464646"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              />
-              <rect
-                x="-0.5"
-                y="0.5"
-                width="34"
-                height="34"
-                rx="17"
-                transform="matrix(-1 8.74228e-08 8.74228e-08 1 34.5 0.0625)"
-                stroke="black"
-                stroke-opacity="0.1"
-              />
-            </svg>
-          </div>
-          <div className="flex flex-col items-start  py-3 gap-[5px] rounded-lg w-[698px]">
-            <h1 className="font-semibold text-sm text-[rgba(70, 70, 70, 0.9)]">
-              You Buy
-            </h1>
-          </div>
+                  <div>
+                    <svg
+                      width="36"
+                      height="36"
+                      viewBox="0 0 36 36"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M10.5 13.0625L12.7929 10.7696C13.1834 10.3791 13.8166 10.3791 14.2071 10.7696L16.5 13.0625"
+                        stroke="#464646"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M13.5 14.0625V16.3125V18.5625V23.0625"
+                        stroke="#464646"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M19.5 22.0625L21.7929 24.3554C22.1834 24.7459 22.8166 24.7459 23.2071 24.3554L25.5 22.0625"
+                        stroke="#464646"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M22.5 21.0625L22.5 12.0625"
+                        stroke="#464646"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                      />
+                      <rect
+                        x="-0.5"
+                        y="0.5"
+                        width="34"
+                        height="34"
+                        rx="17"
+                        transform="matrix(-1 8.74228e-08 8.74228e-08 1 34.5 0.0625)"
+                        stroke="black"
+                        stroke-opacity="0.1"
+                      />
+                    </svg>
+                  </div>
+                  <div className="flex flex-col items-start  py-3 gap-[5px] rounded-lg w-[698px]">
+                    <h1 className="font-semibold text-sm text-[rgba(70, 70, 70, 0.9)]">
+                      You Buy
+                    </h1>
+                  </div>
 
-          <div className="flex flex-col justify-center items-center p-4 gap-5 border rounded-[10px] border-[rgba(70,70,70,0.2)] w-full">
-            <div className="flex flex-row justify-between gap-auto items-center w-full">
-              <div className="flex flex-row items-center gap-2">
-                <h1 className="font-normal text-sm text-center text-[#637592]">
-                  To --
-                </h1>
-                <div className="flex flex-row items-center gap-[18px]">
+                  <div className="flex flex-col justify-center items-center p-4 gap-5 border rounded-[10px] border-[rgba(70,70,70,0.2)] w-full">
+                    <div className="flex flex-row justify-between gap-auto items-center w-full">
+                      <div className="flex flex-row items-center gap-2">
+                        <h1 className="font-normal text-sm text-center text-[#637592]">
+                          To --
+                        </h1>
+                        <div className="flex flex-row items-center gap-[18px]">
+                          <img
+                            src={chainInput2?.icon}
+                            alt="icon"
+                            className="w-[30px] h-[30px] object-contain rounded-full"
+                          />
+                          <h1 className="text-sm text-center text-[#464646] font-semibold">
+                            {chainInput2?.name}
+                          </h1>
+                        </div>
+                      </div>
+                      <Selecttoken
+                        options={Chains}
+                        className="flex-[0.5]"
+                        placeholder="Select Chain"
+                        width={80}
+                        value={chainInput2}
+                        onChange={setChainInput2}
+                      />
+                    </div>
+                    <div className="w-full flex flex-col justify-center gap-2">
+                      {links1.map((item, i) => {
+                        return (
+                          <div key={i}>
+                            <>
+                              <div className="p-[15px]  bg-[rgba(16,187,53,0.08)] rounded-[10px] gap-2 flex w-full flex-col">
+                                <div className="flex flex-row w-full justify-between items-start ">
+                                  <div className="flex flex-col justify-start  w-[300px]">
+                                    <Selecttoken
+                                      options={coins}
+                                      className="flex-[0.5]"
+                                      placeholder="Select token"
+                                      width={80}
+                                      value={item.token}
+                                      onChange={async (event) => {
+                                        const balance = await getBalance(
+                                          event.id
+                                        );
+                                        setLinks1((s) => {
+                                          s[i].token = event;
+                                          s[i].balance = balance;
+                                          return [...s];
+                                        });
+                                      }}
+                                    />
+                                    <div className="flex flex-row gap-2 justify-start items-center">
+                                      <h1 className=" font-normal text-xs text-[rgba(70,70,70,1)]">
+                                        Current Balance:
+                                      </h1>
+                                      <h1 className="font-semibold text-sm text-primary-green">
+                                        {item.balance}
+                                      </h1>
+                                    </div>
+                                  </div>
+                                  <div className="flex flex-col  w-[300px]">
+                                    <h1 className="w-full text-right font-medium text-xl text-[#464646]">
+                                      {coinprice}
+                                    </h1>
+                                    <h1 className="w-full text-right font-medium text-sm text-[#464646]">
+                                      =$ 0.00
+                                    </h1>
+                                  </div>
+                                  {multiinput1 === 1 ? (
+                                    <button
+                                      className="flex flex-row items-start p-2 gap-[10px] bg-white rounded-full"
+                                      onClick={(e) => handleRemove1(i)}
+                                    >
+                                      <svg
+                                        width="12"
+                                        height="12"
+                                        viewBox="0 0 12 12"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M1 11.0625L11 1.0625"
+                                          stroke="#464646"
+                                          stroke-width="1.5"
+                                          stroke-linecap="round"
+                                          stroke-linejoin="round"
+                                        />
+                                        <path
+                                          d="M1 1.0625L11 11.0625"
+                                          stroke="#464646"
+                                          stroke-width="1.5"
+                                          stroke-linecap="round"
+                                          stroke-linejoin="round"
+                                        />
+                                      </svg>
+                                    </button>
+                                  ) : (
+                                    <div className="hidden"></div>
+                                  )}
+                                </div>
+                                {multiinput1 === 1 ? (
+                                  <div className="flex flex-row justify-center items-center gap-[10px]">
+                                    <input
+                                      className="rounded-md overflow-hidden appearance-none bg-gray-400 h-2 w-full"
+                                      value={item.range}
+                                      onChange={(e) => {
+                                        setLinks1((s) => {
+                                          console.log(s);
+                                          s[i].range = +e.target.value;
+                                          console.log(s, e.target.value);
+                                          return [...s];
+                                        });
+                                      }}
+                                      type="range"
+                                      min="1"
+                                      max="100"
+                                      step="1"
+                                    />
+                                    <input
+                                      type="text"
+                                      placeholder={item.range}
+                                      value={item.range}
+                                      onChange={(e) => {
+                                        setLinks1((s) => {
+                                          console.log(s);
+                                          s[i].range = +e.target.value;
+                                          console.log(s, e.target.value);
+                                          return [...s];
+                                        });
+                                      }}
+                                      className=" text-[18px] w-[100px] text-[#464646] focus:outline-none placeholder-shown:text-right text-right py-[10px] px-[10px] justify-end rounded-[8px] flex placeholder-right placeholder-[rgba(70,70,70,0.6)]"
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="hidden"></div>
+                                )}
+                              </div>
+                            </>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {multiinput1 === 1 ? (
+                      <div className="flex flex-row w-full justify-between items-center">
+                        <button
+                          onClick={addInput1}
+                          className="bg-primary-green py-[5px] px-[15px] gap-[7px] rounded-md font-semibold text-base text-white flex flex-row items-center"
+                        >
+                          <svg
+                            width="17"
+                            height="18"
+                            viewBox="0 0 17 18"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M1.487 9.03125H15.5495"
+                              stroke="white"
+                              stroke-width="2.34375"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                            <path
+                              d="M8.51825 2L8.51825 16.0625"
+                              stroke="white"
+                              stroke-width="2.34375"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                          </svg>
+                          Add
+                        </button>
+                        <button
+                          onClick={() => split2()}
+                          className=" py-[5px] px-2  gap-[7px] rounded-md font-semibold text-sm text-[#464646] flex flex-row items-end border border-white hover:border-[#10BB35] hover:bg-[rgba(16,187,53,0.12)] "
+                        >
+                          % Split Evenly
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        className="bg-primary-green py-[5px] px-[15px] gap-[7px] rounded-md font-semibold text-base text-white flex flex-row items-center"
+                        onClick={addInput1}
+                      >
+                        <svg
+                          width="17"
+                          height="18"
+                          viewBox="0 0 17 18"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M1.487 9.03125H15.5495"
+                            stroke="white"
+                            stroke-width="2.34375"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                          <path
+                            d="M8.51825 2L8.51825 16.0625"
+                            stroke="white"
+                            stroke-width="2.34375"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                        Add
+                      </button>
+                    )}
+                  </div>
+                </div>
+                {confirm ? (
+                  <div className="flex flex-col justify-center items-center w-full gap-2 p-3">
+                    <Trade />
+
+                    <div className="flex flex-row justify-center items-center gap-2">
+                      <div className="w-9 h-[5px] bg-primary-green rounded-l-sm" />
+                      <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] " />
+                      <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] " />
+                      <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] rounded-r-sm" />
+                    </div>
+                    <div className="flex flex-row justify-center items-center w-full gap-4">
+                      <button
+                        className="bg-[rgba(16,187,53,0.12)] py-[10px] px-[30px]  rounded-lg font-semibold text-base text-[#464646]"
+                        onClick={() => setSchedule(true)}
+                      >
+                        Schedule
+                      </button>
+                      <button
+                        className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white"
+                        onClick={() => setInstant(true)}
+                      >
+                        Instant
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full flex justify-center items-center p-3">
+                    <button
+                      onClick={setConfirm}
+                      className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white"
+                    >
+                      Confirm
+                    </button>
+                  </div>
+                )}
+              </div>
+            </Tab.Panel>
+            <Tab.Panel>
+              <div classname="gap-3 flex flex-col justify-center items-center">
+                <div className="flex flex-col items-center  gap-2">
+                  <div className="flex flex-col items-start  py-3 gap-[5px] rounded-lg w-[698px]">
+                    <h1 className="font-semibold text-sm text-[rgba(70, 70, 70, 0.9)]">
+                      You sell
+                    </h1>
+                  </div>
+                  <div className="flex flex-col justify-center items-center p-4 gap-5 border rounded-[10px] border-[rgba(70,70,70,0.2)] w-full">
+                    <div className="flex flex-row justify-end gap-2 items-center w-full">
+                      <div className="flex flex-row items-center gap-2">
+                        <h1 className="font-normal text-sm text-center text-[#637592]">
+                          From --
+                        </h1>
+                        {/*<div className="flex flex-row items-center gap-[18px]">
                   <img
-                    src={chainInput2?.icon}
+                    src={chainInput1?.icon}
                     alt="icon"
                     className="w-[30px] h-[30px] object-contain rounded-full"
                   />
                   <h1 className="text-sm text-center text-[#464646] font-semibold">
-                    {chainInput2?.name}
+                    {chainInput1?.name}
                   </h1>
-                </div>
-              </div>
-              <Selecttoken
-                options={Chains}
-                className="flex-[0.5]"
-                placeholder="Select Chain"
-                width={80}
-                value={chainInput2}
-                onChange={setChainInput2}
-              />
-            </div>
-            <div className="w-full flex flex-col justify-center gap-2">
-              {links1.map((item, i) => {
-                return (
-                  <div key={i}>
-                    <>
-                      <div className="p-[15px]  bg-[rgba(16,187,53,0.08)] rounded-[10px] gap-2 flex w-full flex-col">
-                        <div className="flex flex-row w-full justify-between items-start ">
-                          <div className="flex flex-col justify-start  w-[300px]">
-                            <Selecttoken
-                              options={coins}
-                              className="flex-[0.5]"
-                              placeholder="Select token"
-                              width={80}
-                              value={item.token}
-                              onChange={async (event) => {
-                                const balance = await getBalance(event.id);
-                                setLinks1((s) => {
-                                  s[i].token = event;
-                                  s[i].balance = balance
-                                  return [...s];
-                                });
-                                
-                              }}
-                            />
-                            <div className="flex flex-row gap-2 justify-start items-center">
-                              <h1 className=" font-normal text-xs text-[rgba(70,70,70,1)]">
-                                Current Balance:
-                              </h1>
-                              <h1 className="font-semibold text-sm text-primary-green">
-                              {item.balance}
-                              </h1>
-                            </div>
-                          </div>
-                          <div className="flex flex-col  w-[300px]">
-                          <h1 className="w-full text-right font-medium text-xl text-[#464646]">
-                              {coinprice}
-                            </h1>
-                            <h1 className="w-full text-right font-medium text-sm text-[#464646]">
-                              =$ 0.00
-                            </h1>
-                          </div>
-                          {multiinput1 === 1 ? (
-                            <button
-                              className="flex flex-row items-start p-2 gap-[10px] bg-white rounded-full"
-                              onClick={(e) => handleRemove1(i)}
-                            >
-                              <svg
-                                width="12"
-                                height="12"
-                                viewBox="0 0 12 12"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M1 11.0625L11 1.0625"
-                                  stroke="#464646"
-                                  stroke-width="1.5"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                />
-                                <path
-                                  d="M1 1.0625L11 11.0625"
-                                  stroke="#464646"
-                                  stroke-width="1.5"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                />
-                              </svg>
-                            </button>
-                          ) : (
-                            <div className="hidden"></div>
-                          )}
-                        </div>
-                        {multiinput1 === 1 ? (
-                          <div className="flex flex-row justify-center items-center gap-[10px]">
-                            <input
-                              className="rounded-md overflow-hidden appearance-none bg-gray-400 h-2 w-full"
-                              value={item.range}
-                              onChange={(e) => {
-                                setLinks1((s) => {
-                                  console.log(s);
-                                  s[i].range = +e.target.value;
-                                  console.log(s, e.target.value);
-                                  return [...s];
-                                });
-                              }}
-                              type="range"
-                              min="1"
-                              max="100"
-                              step="1"
-                            />
-                            <input
-                              type="text"
-                              placeholder={item.range}
-                              value={item.range}
-                              onChange={(e) => {
-                                setLinks1((s) => {
-                                  console.log(s);
-                                  s[i].range = +e.target.value;
-                                  console.log(s, e.target.value);
-                                  return [...s];
-                                });
-                              }}
-                              className=" text-[18px] w-[100px] text-[#464646] focus:outline-none placeholder-shown:text-right text-right py-[10px] px-[10px] justify-end rounded-[8px] flex placeholder-right placeholder-[rgba(70,70,70,0.6)]"
-                            />
-                          </div>
-                        ) : (
-                          <div className="hidden"></div>
-                        )}
+                </div> */}
                       </div>
-                    </>
+                      <div className="connect-wallet">
+                        <ConnectButton
+                          accountStatus={{
+                            smallScreen: "avatar",
+                            largeScreen: "full",
+                          }}
+                          showBalance={{
+                            smallScreen: false,
+                            largeScreen: true,
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="w-full flex flex-col justify-center gap-2">
+                      {links.map((item, i) => {
+                        return (
+                          <div key={i}>
+                            <>
+                              <div className="p-[15px]  bg-[rgba(16,187,53,0.08)] rounded-[10px] gap-2 flex w-full flex-col">
+                                <div className="flex flex-row w-full justify-between items-start ">
+                                  <div className="flex flex-col justify-start  w-[300px]">
+                                    <Selecttoken
+                                      options={coins}
+                                      className="flex-[0.5]"
+                                      placeholder="Select token"
+                                      width={80}
+                                      name="tokeninput"
+                                      value={item.token}
+                                      onChange={async (event) => {
+                                        const balance = await getBalance(
+                                          event.id
+                                        );
+                                        setLinks((s) => {
+                                          s[i].token = event;
+                                          s[i].balance = balance;
+                                          return [...s];
+                                        });
+                                      }}
+                                    />
+                                    <div className="flex flex-row gap-2 justify-start items-center">
+                                      <h1 className=" font-normal text-xs text-[rgba(70,70,70,1)]">
+                                        Current Balance:
+                                      </h1>
+                                      <h1 className="font-semibold text-sm text-primary-green">
+                                        {item.balance}
+                                      </h1>
+                                    </div>
+                                  </div>
+                                  <div className="flex flex-col  w-[300px]">
+                                    <div className="w-[300px]  border border-[rgba(0,0,0,0.1)] bg-white  rounded-[8px] items-center justify-between  flex">
+                                      <div className="pl-2">
+                                        <button className="bg-primary-green py-[5px] px-[15px] gap-[7px] rounded-md font-semibold text-base text-white">
+                                          Max
+                                        </button>
+                                      </div>
+                                      <div>
+                                        <input
+                                          type="number"
+                                          placeholder="0.0"
+                                          name="amount"
+                                          value={item.amount}
+                                          onChange={(e) => {
+                                            setLinks((s) => {
+                                              console.log(s);
+                                              s[i].amount = +e.target.value;
+                                              console.log(s, e.target.value);
+                                              return [...s];
+                                            });
+                                          }}
+                                          className=" text-[18px] w-[150px]  text-[#464646] focus:outline-none placeholder-shown:text-right text-right py-[10px] px-[10px] justify-end rounded-[8px] flex placeholder-right placeholder-[rgba(70,70,70,0.6)]"
+                                        />
+                                      </div>
+                                    </div>
+                                    <h1 className="w-full text-right font-medium text-sm text-[#464646]">
+                                      =$ 0.00
+                                    </h1>
+                                  </div>
+                                  {multiinput === 1 ? (
+                                    <button
+                                      className="flex flex-row items-start p-2 gap-[10px] bg-white rounded-full"
+                                      onClick={(e) => handleRemove(i)}
+                                    >
+                                      <svg
+                                        width="12"
+                                        height="12"
+                                        viewBox="0 0 12 12"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M1 11.0625L11 1.0625"
+                                          stroke="#464646"
+                                          stroke-width="1.5"
+                                          stroke-linecap="round"
+                                          stroke-linejoin="round"
+                                        />
+                                        <path
+                                          d="M1 1.0625L11 11.0625"
+                                          stroke="#464646"
+                                          stroke-width="1.5"
+                                          stroke-linecap="round"
+                                          stroke-linejoin="round"
+                                        />
+                                      </svg>
+                                    </button>
+                                  ) : (
+                                    <div className="hidden"></div>
+                                  )}
+                                </div>
+                                {multiinput === 1 ? (
+                                  <div className="flex flex-row justify-center items-center gap-[10px]">
+                                    <input
+                                      className="rounded-md overflow-hidden appearance-none bg-gray-400 h-2 w-full"
+                                      value={item.range}
+                                      onChange={(e) => {
+                                        setLinks((s) => {
+                                          console.log(s);
+                                          s[i].range = +e.target.value;
+                                          console.log(s, e.target.value);
+                                          return [...s];
+                                        });
+                                      }}
+                                      type="range"
+                                      min="1"
+                                      max="100"
+                                      step="1"
+                                    />
+                                    <input
+                                      type="text"
+                                      placeholder={item.range}
+                                      value={item.range}
+                                      onChange={(e) => {
+                                        setLinks((s) => {
+                                          console.log(s);
+                                          s[i].range = +e.target.value;
+                                          console.log(s, e.target.value);
+                                          return [...s];
+                                        });
+                                      }}
+                                      className=" text-[18px] w-[100px] text-[#464646] focus:outline-none placeholder-shown:text-right text-right py-[10px] px-[10px] justify-end rounded-[8px] flex placeholder-right placeholder-[rgba(70,70,70,0.6)]"
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="hidden"></div>
+                                )}
+                              </div>
+                            </>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {multiinput === 1 ? (
+                      <div className="flex flex-row w-full justify-between items-center">
+                        <button
+                          onClick={addInput}
+                          className="bg-primary-green py-[5px] px-[15px] gap-[7px] rounded-md font-semibold text-base text-white flex flex-row items-center"
+                        >
+                          <svg
+                            width="17"
+                            height="18"
+                            viewBox="0 0 17 18"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M1.487 9.03125H15.5495"
+                              stroke="white"
+                              stroke-width="2.34375"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                            <path
+                              d="M8.51825 2L8.51825 16.0625"
+                              stroke="white"
+                              stroke-width="2.34375"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                          </svg>
+                          Add
+                        </button>
+                        <button
+                          onClick={() => split1()}
+                          className=" py-[5px] px-2  gap-[7px] rounded-md font-semibold text-sm text-[#464646] flex flex-row items-end border border-white hover:border-[#10BB35] hover:bg-[rgba(16,187,53,0.12)] "
+                        >
+                          % Split Evenly
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        className="bg-primary-green py-[5px] px-[15px] gap-[7px] rounded-md font-semibold text-base text-white flex flex-row items-center"
+                        onClick={addInput}
+                      >
+                        <svg
+                          width="17"
+                          height="18"
+                          viewBox="0 0 17 18"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M1.487 9.03125H15.5495"
+                            stroke="white"
+                            stroke-width="2.34375"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                          <path
+                            d="M8.51825 2L8.51825 16.0625"
+                            stroke="white"
+                            stroke-width="2.34375"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                        Add
+                      </button>
+                    )}
                   </div>
-                );
-              })}
-            </div>
-            {multiinput1 === 1 ? (
-              <div className="flex flex-row w-full justify-between items-center">
-                <button
-                  onClick={addInput1}
-                  className="bg-primary-green py-[5px] px-[15px] gap-[7px] rounded-md font-semibold text-base text-white flex flex-row items-center"
-                >
-                  <svg
-                    width="17"
-                    height="18"
-                    viewBox="0 0 17 18"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M1.487 9.03125H15.5495"
-                      stroke="white"
-                      stroke-width="2.34375"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M8.51825 2L8.51825 16.0625"
-                      stroke="white"
-                      stroke-width="2.34375"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                  Add
-                </button>
-                <button
-                  onClick={() => split2()}
-                  className=" py-[5px] px-2  gap-[7px] rounded-md font-semibold text-sm text-[#464646] flex flex-row items-end border border-white hover:border-[#10BB35] hover:bg-[rgba(16,187,53,0.12)] "
-                >
-                  % Split Evenly
-                </button>
-              </div>
-            ) : (
-              <button
-                className="bg-primary-green py-[5px] px-[15px] gap-[7px] rounded-md font-semibold text-base text-white flex flex-row items-center"
-                onClick={addInput1}
-              >
-                <svg
-                  width="17"
-                  height="18"
-                  viewBox="0 0 17 18"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M1.487 9.03125H15.5495"
-                    stroke="white"
-                    stroke-width="2.34375"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M8.51825 2L8.51825 16.0625"
-                    stroke="white"
-                    stroke-width="2.34375"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-                Add
-              </button>
-            )}
-          </div>
-        </div>
-        {confirm ? (
-          <div className="flex flex-col justify-center items-center w-full gap-2">
-            <Trade />
-            
-              <div className="flex flex-row justify-center items-center gap-2">
-                <div className="w-9 h-[5px] bg-primary-green rounded-l-sm" />
-                <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] " />
-                <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] " />
-                <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] rounded-r-sm" />
-              </div>
-              <div className="flex flex-row justify-center items-center w-full gap-4">
-              <button
-                className="bg-[rgba(16,187,53,0.12)] py-[10px] px-[30px]  rounded-lg font-semibold text-base text-[#464646]"
-                onClick={() => setSchedule
-                  (true)}
-              >
-                Schedule
-              </button>
-              <button
-                className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white"
-                onClick={() => setInstant(true)}
-              >
-                Instant
-              </button>
-              </div>
-          </div>
-        ) : (
-          <button
-            onClick={setConfirm}
-            className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white"
-          >
-            Confirm
-          </button>
-        )}
-      </div>
+                  <div>
+                    <svg
+                      width="36"
+                      height="36"
+                      viewBox="0 0 36 36"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M10.5 13.0625L12.7929 10.7696C13.1834 10.3791 13.8166 10.3791 14.2071 10.7696L16.5 13.0625"
+                        stroke="#464646"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M13.5 14.0625V16.3125V18.5625V23.0625"
+                        stroke="#464646"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M19.5 22.0625L21.7929 24.3554C22.1834 24.7459 22.8166 24.7459 23.2071 24.3554L25.5 22.0625"
+                        stroke="#464646"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M22.5 21.0625L22.5 12.0625"
+                        stroke="#464646"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                      />
+                      <rect
+                        x="-0.5"
+                        y="0.5"
+                        width="34"
+                        height="34"
+                        rx="17"
+                        transform="matrix(-1 8.74228e-08 8.74228e-08 1 34.5 0.0625)"
+                        stroke="black"
+                        stroke-opacity="0.1"
+                      />
+                    </svg>
+                  </div>
+                  <div className="flex flex-col items-start  py-3 gap-[5px] rounded-lg w-[698px]">
+                    <h1 className="font-semibold text-sm text-[rgba(70, 70, 70, 0.9)]">
+                      You Buy
+                    </h1>
+                  </div>
 
-      <Modal
-        open={instant}
-        onClose={() => setInstant(false)}
-        title="Approve"
-        width="[28rem]"
-      >
-        <Approve />
-      </Modal>
-      <Modal
-        open={modal1}
-        onClose={() => setModal1(false)}
-        title="Error"
-        width="[28rem]"
-        height="[40rem]"
-      >
-        <Error text={"You must have atleast one swap"} />
-      </Modal>
-      <Modal
-        open={schedule}
-        onClose={() => setSchedule(false)}
-        title="Schedule"
-        width="[28rem]"
-      >
-        <Schedule />
-      </Modal>
+                  <div className="flex flex-col justify-center items-center p-4 gap-5 border rounded-[10px] border-[rgba(70,70,70,0.2)] w-full">
+                    <div className="flex flex-row justify-between gap-auto items-center w-full">
+                      <div className="flex flex-row items-center gap-2">
+                        <h1 className="font-normal text-sm text-center text-[#637592]">
+                          To --
+                        </h1>
+                        <div className="flex flex-row items-center gap-[18px]">
+                          <img
+                            src={chainInput2?.icon}
+                            alt="icon"
+                            className="w-[30px] h-[30px] object-contain rounded-full"
+                          />
+                          <h1 className="text-sm text-center text-[#464646] font-semibold">
+                            {chainInput2?.name}
+                          </h1>
+                        </div>
+                      </div>
+                      <Selecttoken
+                        options={Chains}
+                        className="flex-[0.5]"
+                        placeholder="Select Chain"
+                        width={80}
+                        value={chainInput2}
+                        onChange={setChainInput2}
+                      />
+                    </div>
+                    <div className="w-full flex flex-col justify-center gap-2">
+                      {links1.map((item, i) => {
+                        return (
+                          <div key={i}>
+                            <>
+                              <div className="p-[15px]  bg-[rgba(16,187,53,0.08)] rounded-[10px] gap-2 flex w-full flex-col">
+                                <div className="flex flex-row w-full justify-between items-start ">
+                                  <div className="flex flex-col justify-start  w-[300px]">
+                                    <Selecttoken
+                                      options={coins}
+                                      className="flex-[0.5]"
+                                      placeholder="Select token"
+                                      width={80}
+                                      value={item.token}
+                                      onChange={async (event) => {
+                                        const balance = await getBalance(
+                                          event.id
+                                        );
+                                        setLinks1((s) => {
+                                          s[i].token = event;
+                                          s[i].balance = balance;
+                                          return [...s];
+                                        });
+                                      }}
+                                    />
+                                    <div className="flex flex-row gap-2 justify-start items-center">
+                                      <h1 className=" font-normal text-xs text-[rgba(70,70,70,1)]">
+                                        Current Balance:
+                                      </h1>
+                                      <h1 className="font-semibold text-sm text-primary-green">
+                                        {item.balance}
+                                      </h1>
+                                    </div>
+                                  </div>
+                                  <div className="flex flex-col  w-[300px]">
+                                    <h1 className="w-full text-right font-medium text-xl text-[#464646]">
+                                      {coinprice}
+                                    </h1>
+                                    <h1 className="w-full text-right font-medium text-sm text-[#464646]">
+                                      =$ 0.00
+                                    </h1>
+                                  </div>
+                                </div>
+                              </div>
+                            </>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+                {confirm1 ? (
+                  <div className="flex flex-col justify-center items-center w-full gap-2">
+                    <Trade />
+
+                    <div className="flex flex-row justify-center items-center gap-2">
+                      <div className="w-9 h-[5px] bg-primary-green rounded-l-sm" />
+                      <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] " />
+                      <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] " />
+                      <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] rounded-r-sm" />
+                    </div>
+                    <div className="flex flex-row justify-center items-center w-full gap-4 p-3">
+                      <button
+                        className="bg-[rgba(16,187,53,0.12)] py-[10px] px-[30px]  rounded-lg font-semibold text-base text-[#464646]"
+                        onClick={() => setSchedule(true)}
+                      >
+                        Schedule
+                      </button>
+                      <button
+                        className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white"
+                        onClick={() => setInstant(true)}
+                      >
+                        Instant
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full flex justify-center items-center p-3">
+                    <button
+                      onClick={setConfirm1}
+                      className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white"
+                    >
+                      Confirm
+                    </button>
+                  </div>
+                )}
+              </div>
+            </Tab.Panel>
+          </Tab.Panels>
+        </Tab.Group>
+
+        <Modal
+          open={instant}
+          onClose={() => setInstant(false)}
+          title="Approve"
+          width="[28rem]"
+        >
+          <Approve />
+        </Modal>
+        <Modal
+          open={modal1}
+          onClose={() => setModal1(false)}
+          title="Error"
+          width="[28rem]"
+          height="[40rem]"
+        >
+          <Error text={"You must have atleast one swap"} />
+        </Modal>
+        <Modal
+          open={schedule}
+          onClose={() => setSchedule(false)}
+          title="Schedule"
+          width="[28rem]"
+        >
+          <Schedule />
+        </Modal>
+      </div>
     </div>
   );
 };

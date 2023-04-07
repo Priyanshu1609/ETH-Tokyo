@@ -44,16 +44,20 @@ export const coins = [
 
 const Schedule = () => {
   const [time, setTime] = useState([]);
-  const [Frequency, setFrequency] = useState(0);
+  const [frequency, setFrequency] = useState(0);
   const [token, setToken] = useState({});
   const [triggerprice, setTriggerprice] = useState(0);
+  const [tokeninput, setTokeninput] = useState({});
+  const [tokeninput1, setTokenInput1] = useState({});
+  const [amount, setAmount] = useState(0);
+
 
   return (
     <div classname="flex flex-col justify-start items-start w-full ">
       <div className="flex flex-col items-center px-[15px] py-[10px] w-full bg-[rgba(16,187,53,0.12)] ">
         <Tab.Group>
           <Tab.List className="flex flex-row justify-start items-center py-[10px] px-[5px] w-full  gap-[12px] bg-white rounded-lg">
-            <Tab className="hover:bg-[#10bb35] hover:text-white bg-white rounded-md text-[#464646] font-normal text-sm  py-[10px] px-[10px] flex justify-center items-center">Time Schedule</Tab>
+            <Tab className="hover:bg-[#10bb35] hover:text-white bg-white rounded-md text-[#464646] font-normal text-sm  py-[10px] px-[10px] flex justify-center items-center">DCA</Tab>
             <Tab className="hover:bg-[#10bb35] hover:text-white bg-white rounded-md text-[#464646] font-normal text-sm  py-[10px] px-[10px] flex justify-center items-center">Price schedule</Tab>
           </Tab.List>
           <Tab.Panels clasName="w-full">
@@ -77,13 +81,59 @@ const Schedule = () => {
                   type="number"
                   placeholder="Enter total number of cycles"
                   name="Frequency"
-                  value={Frequency}
+                  value={frequency}
                   onChange={(e) => {
                     setFrequency(e.target.value);
                   }}
                   className=" text-[18px] w-[240px] text-[#464646] focus:outline-none  placeholder-shown:text-right text-right py-[10px] px-[10px] justify-end rounded-[8px] flex placeholder-right placeholder-[rgba(70,70,70,0.6)]"
                 />
               </div>
+              <div className="flex  justify-start items-center w-full gap-[2px]">
+                <h1 classname="font-semibold text-sm flex items-center text-[#464646] w-full">
+                 {amount} </h1>
+                <div className="flex flex-row items-center gap-[5px]">
+                    <img
+                      src={tokeninput?.icon}
+                      alt="icon"
+                      className="w-[10px] h-[10px] object-contain rounded-full"
+                    />
+                    <h1 className="font-semibold text-sm text-[#464646]">
+                      {tokeninput?.name}
+                    </h1>
+                  </div>
+                    <h1 classname="font-semibold text-sm flex items-center text-[#464646] w-full">
+                  will be swapped to  
+                </h1>
+                {/*  tokens which user select */}
+                <div className="flex flex-row items-center gap-[5px]">
+                    <img
+                      src={tokeninput?.icon}
+                      alt="icon"
+                      className="w-[10px] h-[10px] object-contain rounded-full"
+                    />
+                    <h1 className="font-semibold text-sm text-[#464646]">
+                      {tokeninput?.name}
+                    </h1>
+                  </div>
+                  <h1 classname="font-semibold text-sm flex items-center text-[#464646] w-full">
+                   ,at the frequency of ({{amount}/{frequency}}) 
+                </h1>
+                <div className="flex flex-row items-center gap-[5px]">
+                    <img
+                      src={tokeninput?.icon}
+                      alt="icon"
+                      className="w-[10px] h-[10px] object-contain rounded-full"
+                    />
+                    <h1 className="font-semibold text-sm text-[#464646]">
+                      {tokeninput?.name}
+                    </h1>
+                  </div>
+                  <h1 classname="font-semibold text-sm flex items-center text-[#464646] w-full">
+                   /{time?.name}
+                </h1>
+                  
+              </div>
+
               <div className="flex flex-col items-end gap-[10px] w-full">
                 <button className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white">
                   Confirm
@@ -122,6 +172,7 @@ const Schedule = () => {
                   className=" text-[18px] w-full border border-[rgba(0,0,0,0.1)]  text-[#464646] focus:outline-none placeholder-shown:text-right text-right py-[10px] px-[10px] justify-end rounded-[8px] flex placeholder-right placeholder-[rgba(70,70,70,0.6)]"
                 />
               </div>
+              
               <div className="flex flex-col items-end gap-[10px] w-full">
                 <button className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white">
                   Confirm

@@ -50,7 +50,7 @@ const complete = () => {
                   className="w-[30px] h-[30px] object-contain rounded-full"
                 />
                 <h1 className="text-sm text-center text-[#464646] font-semibold">
-                  {setchain?.name}
+                  {sellchain?.name}
                 </h1>
               </div>
             </div>
@@ -283,7 +283,9 @@ const complete = () => {
             </a>
             
               
-            <button onClick={onSubmit} className="bg-primary-green py-[10px] px-[20px] w-full rounded-lg font-semibold text-base text-white">
+            <button 
+            // onClick={onSubmit}
+            className="bg-primary-green py-[10px] px-[20px] w-full rounded-lg font-semibold text-base text-white">
               Make Another Trade
             </button>
             
