@@ -21,6 +21,7 @@ function classNames(...classes) {
 const Time = ({ options, onChange, value, placeholder, width, }) => {
   const selectedValue = options?.find((option) => option === value);
   console.log(value)
+  console.log(options)
 
   return (
     <Listbox value={selectedValue} onChange={(option) => onChange(option)}>
@@ -28,7 +29,7 @@ const Time = ({ options, onChange, value, placeholder, width, }) => {
         <>
           <div className="relative text-black">
             <Listbox.Button
-              className={`flex flex-row w-[300px] justify-between items-center py-[8px] px-[14px]  gap-[10px] isolate bg-white  border border-[rgba(70,70,70,0.1)] text-[#464646]  text-[16px]  rounded-[8px] dropdown`}
+              className={`flex flex-row w-[150px] justify-between items-center py-[8px] px-[14px]  gap-[10px] isolate bg-white  border border-[rgba(70,70,70,0.1)] text-[#464646]  text-[16px]  rounded-[8px] dropdown`}
             >
               <div className=" truncate flex p-1">
                 {selectedValue?.name ?? (

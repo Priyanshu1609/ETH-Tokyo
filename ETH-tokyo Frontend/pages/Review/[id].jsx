@@ -12,19 +12,22 @@ const review = () => {
   const [sellamount, setSellmount] = useState(0);
   const [buyamount, setBuyamount] = useState(0);
   const [dollar, setDollar] = useState(0);
-  const [check,setCheck] = useState(false);
-  const[confirmstream, setConfirmstream] =useState(0);
-  const [schedule, setSchedule] = useState(false);
-  const [timeschedule, setTimeschedule] = useState(false);
+  const [check, setCheck] = useState(false);
+  const [confirmstream, setConfirmstream] = useState(0);
+  const [schedule, setSchedule] = useState(true);
+  const [priceschedule, setPriceschedule] = useState(false);
   const [timeprice, setTimeprice] = useState(0);
-  const [time,setTime] = useState({});
-  const [scheduleprice,setScheduleprice] = useState(0);
+  const [time, setTime] = useState({});
+
+  const [frequency, setFrequency] = useState(0);
+  const [scheduleprice, setScheduleprice] = useState(0);
+  const [amount, setAmount] = useState(0);
   // useEffect(() => {
-    // if (confirmstream === 1) {
-      // router.push("/Complete/[id]");
-    // }else {
-      // toast.error("Confirm in metamask")
-    // }
+  // if (confirmstream === 1) {
+  // router.push("/Complete/[id]");
+  // }else {
+  // toast.error("Confirm in metamask")
+  // }
   // }, [confirmstream]);
 
   return (
@@ -254,68 +257,119 @@ const review = () => {
             </div>
           </div>
         </div>
-        {schedule ?(<div className="flex flex-col items-center gap-[10px]">
-          {timeschedule ? (
-          <div className="flex flex-row items-center gap-[8px]">
-          <h1 className="font-normal text-sm text-center text-[#637592]">
-          Price Schedule:--
-              </h1>
-              <h1 className="font-semibold text-base text-[#464646] text-center">
-                {scheduleprice}
-              </h1>
-              <div className="flex flex-row items-center gap-[10px]">
-              <img
-                  src={tokeninput1?.icon}
-                  alt="icon"
-                  className="w-[20px] h-[20px] object-contain rounded-full"
-                />
-                <h1 className="font-semibold text-base text-[#464646]">
-                  {tokeninput1?.name}
+        {schedule ? (
+          <div className="flex flex-col items-center gap-[10px] w-full bg-[rgba(16,187,53,0.12)] border border-[#10bb35] rounded-[9px]">
+            {priceschedule ? (
+              <div className="flex flex-row justify-start items-center w-full gap-[8px] p-4 ">
+                <h1 className="font-normal text-sm text-center text-[#464646] w-[170px]">
+                  Price based Schedule:-
                 </h1>
-
+                <div className="flex flex-row justify-center items-center gap[2px]">
+                  <h1 className="font-semibold text-base text-[#464646] text-center">
+                    The swap will occur when
+                  </h1>
+                  <div className="flex flex-row items-center gap-[10px]">
+                    <img
+                      src={tokeninput1?.icon}
+                      alt="icon"
+                      className="w-[20px] h-[20px] object-contain rounded-full"
+                    />
+                    <h1 className="font-semibold text-base text-[#464646]">
+                      {tokeninput1?.name}
+                    </h1>
+                  </div>
+                  <h1 className="font-semibold text-base text-[#464646] text-center">
+                    price is {scheduleprice}
+                  </h1>
+                </div>
               </div>
-              </div>):(<div className="flex flex-row items-center gap-[8px]">
-          <h1 className="font-normal text-sm text-center text-[#637592]">
-          Time Schedule:--
+            ) : (
+              <div className="flex flex-row items-center gap-[8px] p-4 w-full">
+                <h1 className="font-normal text-sm text-left text-[#464646] w-[170px]">
+                  Time based DCA:-
+                </h1>
+                <div className="flex  justify-start items-center w-full gap-[2px]">
+                <h1 classname="font-semibold text-sm flex items-center text-[#464646] w-full">
+                 {amount} </h1>
+                <div className="flex flex-row items-center gap-[5px]">
+                    <img
+                      src={tokeninput?.icon}
+                      alt="icon"
+                      className="w-[10px] h-[10px] object-contain rounded-full"
+                    />
+                    <h1 className="font-semibold text-base text-[#464646]">
+                      {tokeninput?.name}
+                    </h1>
+                  </div>
+                    <h1 classname="font-semibold text-base flex items-center text-[#464646] w-full">
+                  will be swapped to   
+                </h1>
+                {/*  tokens which user select */}
+                <div className="flex flex-row items-center gap-[5px]">
+                    <img
+                      src={tokeninput?.icon}
+                      alt="icon"
+                      className="w-[10px] h-[10px] object-contain rounded-full"
+                    />
+                    <h1 className="font-semibold text-base text-[#464646]">
+                      {tokeninput?.name}
+                    </h1>
+                  </div>
+                  <h1 classname="font-semibold text-base flex items-center text-[#464646] w-full">
+                   ,at the frequency of ({{amount}/{frequency}}) 
+                </h1>
+                <div className="flex flex-row items-center gap-[5px]">
+                    <img
+                      src={tokeninput?.icon}
+                      alt="icon"
+                      className="w-[10px] h-[10px] object-contain rounded-full"
+                    />
+                    <h1 className="font-semibold text-base text-[#464646]">
+                      {tokeninput?.name}
+                    </h1>
+                  </div>
+                  <h1 classname="font-semibold text-base flex items-center text-[#464646] w-full">
+                   /{time?.name}
+                </h1>
+                  
+              </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-[10px] w-full">
+            <div className="flex flex-row justify-between w-full items-start">
+              <h1 className="font-medium text-sm text-left text-[rgba(70,70,70,0.6)]">
+                Quote Expries in 5 sec
               </h1>
-              <h1 className="font-semibold text-base text-[#464646] text-center">
-                {timeprice}/{time?.name}
-              </h1>
-          </div>)}
-          
-          
-        </div>):(<div className="flex flex-col items-center gap-[10px] w-full">
-          <div className="flex flex-row justify-between w-full items-start">
-            <h1 className="font-medium text-sm text-left text-[rgba(70,70,70,0.6)]">
-              Quote Expries in 5 sec
-            </h1>
-            <div className="flex flex-row items-center gap-2">
-              <h1 className="font-semibold text-sm text-left text-[#464646]">
-                Auto Refresh
-              </h1>
-              <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                <input
-                  onClick={() => {
-                    setEnabled(!enabled);
-                    setConfirm(!confirm);
-                  }}
-                  type="checkbox"
-                  name="toggle"
-                  id="toggle"
-                  checked={enabled}
-                  className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
-                />
-                <label
-                  for="toggle"
-                  className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
-                ></label>
+              <div className="flex flex-row items-center gap-2">
+                <h1 className="font-semibold text-sm text-left text-[#464646]">
+                  Auto Refresh
+                </h1>
+                <div className="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                  <input
+                    onClick={() => {
+                      setEnabled(!enabled);
+                      setConfirm(!confirm);
+                    }}
+                    type="checkbox"
+                    name="toggle"
+                    id="toggle"
+                    checked={enabled}
+                    className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
+                  />
+                  <label
+                    for="toggle"
+                    className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
+                  ></label>
+                </div>
               </div>
             </div>
+            <div class="w-full h-2 bg-blue-200 rounded-full">
+              <div class="w-2/3 h-full text-center text-xs text-white bg-primary-green rounded-full"></div>
+            </div>
           </div>
-          <div class="w-full h-2 bg-blue-200 rounded-full">
-            <div class="w-2/3 h-full text-center text-xs text-white bg-primary-green rounded-full"></div>
-          </div>
-        </div>)}
+        )}
         <div className="flex flex-col justify-center items-center w-full gap-2">
           <Trade />
 
@@ -323,7 +377,7 @@ const review = () => {
             <div className="flex flex-col justify-center items-center gap-3">
               {check ? (
                 <>
-                  <button  className="bg-primary-green flex flex-row justify-center items-center gap-2 py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white">
+                  <button className="bg-primary-green flex flex-row justify-center items-center gap-2 py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white">
                     <img
                       src="/process.png"
                       className="w-[24px] h-[24px] object-contain rounded-full animate-spin "
@@ -357,7 +411,6 @@ const review = () => {
               )}
 
               {/*Button after confirming */}
-              
             </div>
           ) : (
             <div className="flex flex-col justify-center items-center gap-3">
