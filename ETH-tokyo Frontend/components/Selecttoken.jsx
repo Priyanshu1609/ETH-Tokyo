@@ -22,7 +22,7 @@ function classNames(...classes) {
 
 const Selecttoken = ({ options, onChange, value, placeholder, width, }) => {
   const selectedValue = options?.find((option) => option === value);
-  console.log(value)
+  // console.log(value)
 
   return (
     <Listbox value={selectedValue} onChange={(option) => onChange(option)}>

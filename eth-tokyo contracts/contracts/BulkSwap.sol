@@ -157,20 +157,20 @@ contract BulkSwap is OpsTaskCreator {
         uint256 _toChain,
         uint32 destinationDomain,
         uint256 relayerFee
-    ) external payable {
+    ) public payable {
         require(_amount > 0, "Amount must be greater than 0");
         require(_fromToken != _toToken, "From and To tokens must be different");
         require(_toChain > 0, "To chain must be greater than 0");
 
-        IERC20 token = IERC20(_fromToken);
+        // IERC20 token = IERC20(_fromToken);
 
-        require(
-            token.allowance(msg.sender, address(this)) >= _amount,
-            "User must approve amount"
-        );
+        // require(
+        //     token.allowance(msg.sender, address(this)) >= _amount,
+        //     "User must approve amount"
+        // );
 
         // User sends funds to this contract
-        token.transferFrom(msg.sender, address(this), _amount);
+        // token.transferFrom(msg.sender, address(this), _amount);
 
         uint256 slippage = 300;
         // token - weth
@@ -193,6 +193,54 @@ contract BulkSwap is OpsTaskCreator {
             _from,
             block.timestamp
         );
+    }
+
+    function executeMultipleOrderToMany(
+        address _from,
+        address _to,
+        uint256[] calldata _amounts,
+        address _fromToken,
+        address[] calldata _toTokens,
+        uint256 _toChain,
+        uint32 _destinationDomain,
+        uint256 relayerFee
+    ) public payable {
+        for (uint256 i = 0; i < _amounts.length; i++) {
+            executeOrder(
+                _from,
+                _to,
+                _amounts[i],
+                _fromToken,
+                _toTokens[i],
+                _toChain,
+                _destinationDomain,
+                relayerFee
+            );
+        }
+    }
+
+    function executeMultipleOrderToOne(
+        address _from,
+        address _to,
+        uint256[] calldata _amounts,
+        address[] calldata _fromTokens,
+        address _toToken,
+        uint256 _toChain,
+        uint32 _destinationDomain,
+        uint256 relayerFee
+    ) public payable {
+        for (uint256 i = 0; i < _amounts.length; i++) {
+            executeOrder(
+                _from,
+                _to,
+                _amounts[i],
+                _fromTokens[i],
+                _toToken,
+                _toChain,
+                _destinationDomain,
+                relayerFee
+            );
+        }
     }
 
     address public owner;
