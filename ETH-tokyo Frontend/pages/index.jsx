@@ -362,7 +362,7 @@ const Home = () => {
                                       <div>
                                         <input
                                           type="number"
-                                          placeholder="0.0"
+                                          placeholder={amount1}
                                           name="amount"
                                           value={amount1}
                                           onChange={setAmount1}
