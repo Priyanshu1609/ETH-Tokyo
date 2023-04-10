@@ -1,7 +1,5 @@
 import Head from 'next/head'
 import React, { useContext } from 'react'
-import Navbar from '../components/Navbar'
-import Sidebar from '../components/Sidebar'
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -44,10 +42,7 @@ const client = createClient({
 })
 
 import { AppContext, AppProvider } from "../context/AppContext";
-import { SuperFluidProvider } from "../context/SuperFluid";
-import ConnectModal from "./ConnectWalletCustom";
 import { useRouter } from 'next/router';
-import Modal from './Modal';
 import Loader from "../components/Loader";
 import SideBar from '../components/Sidebar';
 
@@ -57,7 +52,7 @@ const Layout = ({ children }) => {
 
     return (
 
-        <WagmiConfig  client={client}>
+        <WagmiConfig client={client}>
             <RainbowKitProvider
                 showRecentTransactions={true}
                 theme={lightTheme({
@@ -69,34 +64,32 @@ const Layout = ({ children }) => {
                 })}
                 chains={chains}>
                 <AppProvider>
-                    <SuperFluidProvider>
-                        <Head>
-                            <title>Autopay - Zap</title>
-                            <link rel="icon" href="/favicon.ico"/>
-                            <link rel="preconnect" href="https://fonts.googleapis.com" />
-                            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin />
-                            <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"  rel="stylesheet" />
-                        </Head>
-                        <div className="font-Poppins flex h-full flex-row  items-start w-full  bg-secondary-white">
+                    <Head>
+                        <title>Autopay - Zap</title>
+                        <link rel="icon" href="/favicon.ico" />
+                        <link rel="preconnect" href="https://fonts.googleapis.com" />
+                        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin />
+                        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+                    </Head>
+                    <div className="font-Poppins flex h-full flex-row  items-start w-full  bg-secondary-white">
                         <SideBar />
-                            {children}
-                            {/* <ConnectModal /> */}
-                            <ToastContainer
-                                position="top-right"
-                                hideProgressBar={false}
-                                newestOnTop={false}
-                                closeOnClick
-                                rtl={false}
-                                pauseOnFocusLoss
-                                draggable
-                                pauseOnHover
-                                theme="dark"
-                                className={'z-index-9999'}
-                            />
+                        {children}
+                        {/* <ConnectModal /> */}
+                        <ToastContainer
+                            position="top-right"
+                            hideProgressBar={false}
+                            newestOnTop={false}
+                            closeOnClick
+                            rtl={false}
+                            pauseOnFocusLoss
+                            draggable
+                            pauseOnHover
+                            theme="dark"
+                            className={'z-index-9999'}
+                        />
 
-                            <Loader bg={false} message='Loading ...' desc="Please wait Loading !" />
-                        </div>
-                    </SuperFluidProvider>
+                        <Loader bg={false} message='Loading ...' desc="Please wait Loading !" />
+                    </div>
                 </AppProvider>
             </RainbowKitProvider>
         </WagmiConfig>

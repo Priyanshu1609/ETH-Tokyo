@@ -1,41 +1,18 @@
 import { ethers } from "ethers";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { FACTORY_ADDRESSES, TxBTN } from "../constants";
 import ERC_20 from "../abis/ERC_20.json";
+import { AppContext } from "../context/AppContext";
 
-const Approve = ({ tokenInput1, setApprove, setIsApproved }) => {
+const Approve = ({ giveAllowance, txHash, process, tokenInput1 }) => {
 
-  const [process, setProcess] = useState(0);
-  const [txHash, setTxHash] = useState("");
+  const { step,
+    setStep,
+    data,
+    setData,
+    onExecuteOrder } = useContext(AppContext);
 
 
-  const giveAllowance = async () => {
-    try {
-
-      if (!tokenInput1?.id) {
-        alert("Please select token");
-        return
-      };
-      console.log("1");
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      setProcess(1);
-      const contract = new ethers.Contract(tokenInput1?.id, ERC_20, signer);
-      const tx = await contract.approve(FACTORY_ADDRESSES[5], ethers.constants.MaxUint256);
-      setTxHash("https://goerli.etherscan.io/tx/" + tx.hash);
-      setProcess(2)
-      const res = await tx.wait();
-
-      console.log(tx, res);
-      setProcess(3);
-      setIsApproved(true);
-      setApprove(false);
-
-    } catch (error) {
-      setProcess(0);
-      console.error(error);
-    }
-  }
   return (
     <div classname="flex flex-col justify-start items-start w-full">
       <div className="flex flex-col items-center px-[15px] py-[10px]">
@@ -109,6 +86,7 @@ const Approve = ({ tokenInput1, setApprove, setIsApproved }) => {
           </div>
         }
       </div>
+
     </div>
   );
 };

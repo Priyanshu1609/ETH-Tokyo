@@ -1,6 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { AppContext } from "../context/AppContext";
+
 
 const complete = () => {
+
+    const { step,
+        setStep,
+        data,
+        setData,
+        onExecuteOrder } = useContext(AppContext);
+
+
+
     const [sellchain, setSellchain] = useState({})
     const [buychain, setBuychain] = useState({})
     const [confirm, setConfirm] = useState(true);

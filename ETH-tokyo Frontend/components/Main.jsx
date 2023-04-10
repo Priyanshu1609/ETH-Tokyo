@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Selecttoken from "./Selecttoken";
 import Modal from "./Modal";
 import Approve from "./Approve";
@@ -15,9 +15,17 @@ import { useRouter } from "next/router";
 import { ethers } from "ethers";
 import ERC_20 from "../abis/ERC_20.json";
 import { useNetwork } from 'wagmi'
+import { AppContext } from "../context/AppContext";
 
 const Main = () => {
     const router = useRouter();
+
+    const { step,
+        setStep,
+        data,
+        setData,
+        onExecuteOrder } = useContext(AppContext);
+
 
     const [chainInput2, setChainInput2] = useState([]);
     const [tokenInput1, setTokenInput1] = useState([]);
@@ -55,7 +63,52 @@ const Main = () => {
     const [balance, setBalance] = useState(0.0);
     const [balance1, setBalance1] = useState(0.0);
 
-    console.log({ amount1 });
+    const [process, setProcess] = useState(0);
+    const [txHash, setTxHash] = useState("");
+    // console.log({ amount1 });
+
+    const giveAllowance = async () => {
+        try {
+
+            if (!tokenInput1?.id) {
+                alert("Please select token");
+                return
+            };
+            console.log("1");
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            setProcess(1);
+            const contract = new ethers.Contract(tokenInput1?.id, ERC_20, signer);
+            // const tx = await contract.approve(FACTORY_ADDRESSES[5], ethers.constants.MaxUint256);
+            // setTxHash("https://goerli.etherscan.io/tx/" + tx.hash);
+            setProcess(2)
+            // const res = await tx.wait();
+
+            // console.log(tx, res);
+            setProcess(3);
+            // setIsApproved(true);
+
+            setData(
+                {
+                    _from: address,
+                    _to: address,
+                    _amount: amount1,
+                    _fromToken: tokenInput1,
+                    _toToken: tokenInput2,
+                    _toChain: chainInput2,
+                    _destinationDomain: "9991",
+                    _relayerFee: 0,
+                },
+            );
+            setStep(1);
+
+            setApprove(false);
+
+        } catch (error) {
+            setProcess(0);
+            console.error(error);
+        }
+    }
 
     const onConfirm = () => {
         if (!tokenInput1?.id) {
@@ -83,12 +136,13 @@ const Main = () => {
         try {
             if (!tokenInput1?.id) return;
 
-            const contract1 = new ethers.Contract(tokenInput1?.id, ERC_20, PROVIDERS[chain.id]);
+            // const contract1 = new ethers.Contract(tokenInput1?.id, ERC_20, PROVIDERS[chain.id]);
 
-            const res = await contract1.balanceOf(address);
-            const dec = await contract1.decimals();
+            // const res = await contract1.balanceOf(address);
+            // const dec = await contract1.decimals();
 
-            const format = res / (10 ** dec);
+            // const format = res / (10 ** dec);
+            const format = "1000"
             // console.log(format);
             setBalance(format.toString());
 
@@ -101,11 +155,11 @@ const Main = () => {
 
             if (!tokenInput2?.id) return;
 
-            const contract1 = new ethers.Contract("0xE097d6B3100777DC31B34dC2c58fB524C2e76921", ERC_20, PROVIDERS[chainInput2.id]);
-            const res = await contract1.balanceOf(address);
-            const dec = await contract1.decimals();
-
-            const format = res / (10 ** dec);
+            // const contract1 = new ethers.Contract("0xE097d6B3100777DC31B34dC2c58fB524C2e76921", ERC_20, PROVIDERS[chainInput2.id]);
+            // const res = await contract1.balanceOf(address);
+            // const dec = await contract1.decimals();
+            // const format = res / (10 ** dec);
+            const format = "1000"
             setBalance1(format.toString());
 
         } catch (error) {
@@ -551,41 +605,15 @@ const Main = () => {
                                         )}
                                     </div>
                                 </div>
-                                {confirm ? (
-                                    <div className="flex flex-col justify-center items-center w-full gap-2 p-3">
-                                        <Trade />
 
-                                        <div className="flex flex-row justify-center items-center gap-2">
-                                            <div className="w-9 h-[5px] bg-primary-green rounded-l-sm" />
-                                            <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] " />
-                                            <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] " />
-                                            <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] rounded-r-sm" />
-                                        </div>
-                                        <div className="flex flex-row justify-center items-center w-full gap-4">
-                                            <button
-                                                className="bg-[rgba(16,187,53,0.12)] py-[10px] px-[30px]  rounded-lg font-semibold text-base text-[#464646]"
-                                                onClick={() => setSchedule(true)}
-                                            >
-                                                Schedule
-                                            </button>
-                                            <button
-                                                className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white"
-                                            // onClick={onSubmit}
-                                            >
-                                                Instant
-                                            </button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="w-full flex justify-center items-center p-3">
-                                        <button
-                                            onClick={onConfirm}
-                                            className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white"
-                                        >
-                                            Confirm
-                                        </button>
-                                    </div>
-                                )}
+                                <div className="w-full flex justify-center items-center p-3">
+                                    <button
+                                        onClick={onConfirm}
+                                        className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white"
+                                    >
+                                        Confirm
+                                    </button>
+                                </div>
                             </div>
                         </Tab.Panel>
 
@@ -988,7 +1016,7 @@ const Main = () => {
                     title="Approve"
                     width="[28rem]"
                 >
-                    <Approve tokenInput1={tokenInput1} setApprove={setApprove} setIsApproved={setConfirm} />
+                    <Approve giveAllowance={giveAllowance} txHash={txHash} process={process} tokenInput1={tokenInput1} />
                 </Modal>
                 <Modal
                     open={modal1}
