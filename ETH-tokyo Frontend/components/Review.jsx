@@ -192,16 +192,16 @@ const Review = () => {
                                     </h1>
                                     <div className="flex flex-row items-center gap-[10px]">
                                         <img
-                                            src={tokeninput1?.icon}
+                                            src={data._triggertoken.icon}
                                             alt="icon"
                                             className="w-[20px] h-[20px] object-contain rounded-full"
                                         />
                                         <h1 className="font-semibold text-base text-[#464646]">
-                                            {tokeninput1?.name}
+                                        {data._triggertoken.name}
                                         </h1>
                                     </div>
                                     <h1 className="font-semibold text-base text-[#464646] text-center">
-                                        price is {scheduleprice}
+                                        price is {data._triggerprice}
                                     </h1>
                                 </div>
                             </div>
@@ -213,45 +213,48 @@ const Review = () => {
                                 <div className="flex  justify-start items-center w-full gap-[2px]">
                                     <h1 classname="font-semibold text-sm flex items-center text-[#464646] w-full">
                                         {amount} </h1>
-                                    <div className="flex flex-row items-center gap-[5px]">
+                                        {data._fromToken.map((item,i)=>{
+                                    <div key={i} className="flex flex-row items-center gap-[5px]">
                                         <img
-                                            src={tokeninput?.icon}
+                                            src={item.icon}
                                             alt="icon"
                                             className="w-[10px] h-[10px] object-contain rounded-full"
                                         />
                                         <h1 className="font-semibold text-base text-[#464646]">
-                                            {tokeninput?.name}
+                                            {item.name}
                                         </h1>
-                                    </div>
+                                    </div>})}
                                     <h1 classname="font-semibold text-base flex items-center text-[#464646] w-full">
                                         will be swapped to
                                     </h1>
                                     {/*  tokens which user select */}
-                                    <div className="flex flex-row items-center gap-[5px]">
+                                    {data. _toToken.map((item,i)=>{
+                                    <div key={i} className="flex flex-row items-center gap-[5px]">
                                         <img
-                                            src={tokeninput?.icon}
+                                            src={item.icon}
                                             alt="icon"
                                             className="w-[10px] h-[10px] object-contain rounded-full"
                                         />
                                         <h1 className="font-semibold text-base text-[#464646]">
-                                            {tokeninput?.name}
+                                            {item.name}
                                         </h1>
-                                    </div>
+                                    </div>})}
                                     <h1 classname="font-semibold text-base flex items-center text-[#464646] w-full">
-                                        ,at the frequency of ({{ amount } / { frequency }})
+                                        ,at the frequency of ({data._amount}/{data._frequency})
                                     </h1>
-                                    <div className="flex flex-row items-center gap-[5px]">
+                                    {data._fromToken.map((item,i)=>{
+                                    <div key={i} className="flex flex-row items-center gap-[5px]">
                                         <img
-                                            src={tokeninput?.icon}
+                                            src={item.icon}
                                             alt="icon"
                                             className="w-[10px] h-[10px] object-contain rounded-full"
                                         />
                                         <h1 className="font-semibold text-base text-[#464646]">
-                                            {tokeninput?.name}
+                                            {item.name}
                                         </h1>
-                                    </div>
+                                    </div>})}
                                     <h1 classname="font-semibold text-base flex items-center text-[#464646] w-full">
-                                        /{time?.name}
+                                        /{data._time.name}
                                     </h1>
 
                                 </div>
