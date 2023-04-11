@@ -75,12 +75,19 @@ const Approve = ({ giveAllowance, txHash, process, tokenInput1 }) => {
                   </div>
                 )
               }
+              {/* after a delay it go to review page */}
               {process === 3 && (
-                <button
-                  className="bg-primary-green py-[5px] px-[15px] gap-[7px] rounded-md font-semibold text-base text-white"
-                >
+                <div className="flex flex-row justify-end  items-center gap-2">
+                <button className="py-[5px] flex flex-row justify-end items-center  px-[6px] gap-[7px]  rounded-md font-medium text-xs text-primary-green">
                   Approved
                 </button>
+                <a href={txHash} target="_blank">
+                  <button className="py-[5px] flex flex-row justify-end items-center hover:bg-[rgba(16,187,53,0.12)] border border-white hover:border hover:border-[#10bb35] px-[6px] gap-[7px] rounded-md font-medium text-xs text-[#464646]">
+                    <TxBTN />
+                    View Transaction
+                  </button>
+                </a>
+              </div>
               )}
             </div>
           </div>

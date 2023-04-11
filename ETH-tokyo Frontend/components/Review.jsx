@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
 import Trade from "../components/Trade";
-import { toast } from "react-toastify";
 import { SwapBTN, TxBTN } from "../constants";
 import { AppContext } from "../context/AppContext";
 import { chain } from "wagmi";
+import Schedule from "./Schedule";
+import Modal from "./Modal";
 
 const Review = () => {
 
@@ -25,7 +26,7 @@ const Review = () => {
     const [dollar, setDollar] = useState(0);
     const [check, setCheck] = useState(0);
     const [confirmstream, setConfirmstream] = useState(0);
-    const [schedule, setSchedule] = useState(true);
+    const [schedule, setSchedule] = useState(false);
     const [priceschedule, setPriceschedule] = useState(false);
     const [timeprice, setTimeprice] = useState(0);
     const [time, setTime] = useState({});
@@ -64,41 +65,43 @@ const Review = () => {
                             </h1>
                             <div className="flex flex-row items-center gap-[8px]">
                                 <img
-                                    src={data._fromToken.icon}
+                                    src={chain?.icon}
                                     alt="icon"
                                     className="w-[30px] h-[30px] object-contain rounded-full"
                                 />
                                 <h1 className="text-sm text-center text-[#464646] font-semibold">
-                                    {chain?.id}
+                                    {chain?.name}
                                 </h1>
                             </div>
                         </div>
 
 
-                        <div className="flex flex-row justify-between items-center py-[13px] px-4 w-full bg-white border border-[rgba(0,0,0,0.1)] rounded-lg">
+                        {data._fromToken.map((item,i)=>{
+                            <div key={i} className="flex flex-row justify-between items-center py-[13px] px-4 w-full bg-white border border-[rgba(0,0,0,0.1)] rounded-lg">
                             <div className="flex flex-row items-center gap-[18px]">
                                 <img
-                                    src={data._fromToken.icon}
+                                    src={item.icon}
                                     alt="icon"
                                     className="w-[30px] h-[30px] object-contain rounded-full"
                                 />
                                 <h1 className="font-semibold text-lg text-[#464646]">
-                                    {data._fromToken.name}
+                                    {item.name}
                                 </h1>
                             </div>
                             <div className="flex flex-col items-end gap-2 ">
                                 <h1 className="font-semibold text-base text-[#464646]">
                                     {" "}
-                                    {data._amount} {data._fromToken.name}
+                                    {data._amount} {item.name}
                                 </h1>
                                 <h1 className="font-normal text-sm text-[#464646]">
                                     ${dollar}
                                 </h1>
                             </div>
                         </div>
+                        })}
                     </div>
                     <div>
-                        <TxBTN />
+                        <SwapBTN />
                     </div>
                     <div className="flex flex-col items-start  py-3 gap-[5px] rounded-lg w-[698px]">
                         <h1 className="font-semibold text-sm text-[rgba(70, 70, 70, 0.9)]">
@@ -113,65 +116,67 @@ const Review = () => {
 
                             <div className="flex flex-row items-center gap-[8px]">
                                 <img
-                                    src={data._toToken.icon}
+                                    src={data.toChain.icon}
                                     alt="icon"
                                     className="w-[30px] h-[30px] object-contain rounded-full"
                                 />
                                 <h1 className="text-sm text-center text-[#464646] font-semibold">
-                                    {data.toChain}
+                                    {data.toChain.name}
                                 </h1>
                             </div>
                         </div>
-                        <div className="flex flex-row justify-between items-center py-[13px] px-4 w-full bg-white border border-[rgba(0,0,0,0.1)] rounded-lg">
-                            <div className="flex flex-row items-center gap-[18px]">
-                                <img
-                                    src={data._toToken?.icon}
-                                    alt="icon"
-                                    className="w-[30px] h-[30px] object-contain rounded-full"
-                                />
-                                <h1 className="font-semibold text-lg text-[#464646]">
-                                    {data._toToken?.name}
-                                </h1>
-                                <button className="flex justify-center items-center p-[12px] bg-primary-green rounded-md">
-                                    <svg
-                                        width="18"
-                                        height="18"
-                                        viewBox="0 0 18 18"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            d="M11.12 0.796875L12.72 0.796875C14.9291 0.796875 16.72 2.58774 16.72 4.79688L16.72 12.7969C16.72 15.006 14.9291 16.7969 12.72 16.7969L4.72 16.7969C2.51086 16.7969 0.720001 15.006 0.720001 12.7969L0.720001 4.79688C0.720001 2.58774 2.51086 0.796876 4.72 0.796876L6.32 0.796875"
-                                            stroke="white"
-                                            stroke-width="1.2"
-                                            stroke-linecap="round"
-                                        />
-                                        <path
-                                            d="M6.32001 9.59707L8.15432 11.4314C8.46674 11.7438 8.97327 11.7438 9.28569 11.4314L11.12 9.59707"
-                                            stroke="white"
-                                            stroke-width="1.2"
-                                            stroke-linecap="round"
-                                        />
-                                        <path
-                                            d="M8.72001 11.1967L8.72001 5.59668"
-                                            stroke="white"
-                                            stroke-width="1.2"
-                                            stroke-linecap="round"
-                                        />
-                                    </svg>
-                                </button>
-                            </div>
-                            <div className="flex flex-col items-end gap-2 ">
-                                <h1 className="font-semibold text-base text-[#464646]">
-                                    {" "}
-                                    {buyamount} {data._toToken?.name}
-                                </h1>
-                                <h1 className="font-normal text-sm text-[#464646]">
-                                    {" "}
-                                    ${dollar}
-                                </h1>
-                            </div>
-                        </div>
+                       {data._toToken.map((item,i)=>{
+                         <div key={i} className="flex flex-row justify-between items-center py-[13px] px-4 w-full bg-white border border-[rgba(0,0,0,0.1)] rounded-lg">
+                         <div className="flex flex-row items-center gap-[18px]">
+                             <img
+                                 src={item.icon}
+                                 alt="icon"
+                                 className="w-[30px] h-[30px] object-contain rounded-full"
+                             />
+                             <h1 className="font-semibold text-lg text-[#464646]">
+                                 {item.name}
+                             </h1>
+                             <button className="flex justify-center items-center p-[12px] bg-primary-green rounded-md">
+                                 <svg
+                                     width="18"
+                                     height="18"
+                                     viewBox="0 0 18 18"
+                                     fill="none"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                 >
+                                     <path
+                                         d="M11.12 0.796875L12.72 0.796875C14.9291 0.796875 16.72 2.58774 16.72 4.79688L16.72 12.7969C16.72 15.006 14.9291 16.7969 12.72 16.7969L4.72 16.7969C2.51086 16.7969 0.720001 15.006 0.720001 12.7969L0.720001 4.79688C0.720001 2.58774 2.51086 0.796876 4.72 0.796876L6.32 0.796875"
+                                         stroke="white"
+                                         stroke-width="1.2"
+                                         stroke-linecap="round"
+                                     />
+                                     <path
+                                         d="M6.32001 9.59707L8.15432 11.4314C8.46674 11.7438 8.97327 11.7438 9.28569 11.4314L11.12 9.59707"
+                                         stroke="white"
+                                         stroke-width="1.2"
+                                         stroke-linecap="round"
+                                     />
+                                     <path
+                                         d="M8.72001 11.1967L8.72001 5.59668"
+                                         stroke="white"
+                                         stroke-width="1.2"
+                                         stroke-linecap="round"
+                                     />
+                                 </svg>
+                             </button>
+                         </div>
+                         <div className="flex flex-col items-end gap-2 ">
+                             <h1 className="font-semibold text-base text-[#464646]">
+                                 {" "}
+                                 {buyamount} {item.name}
+                             </h1>
+                             <h1 className="font-normal text-sm text-[#464646]">
+                                 {" "}
+                                 ${dollar}
+                             </h1>
+                         </div>
+                     </div>
+                       })}
                     </div>
                 </div>
                 {schedule ? (
@@ -301,8 +306,6 @@ const Review = () => {
 
                                         <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] rounded-r-sm" />
                                     </div>
-                                    <div className="flex flex-col justify-center items-center w-full gap-2 p-3">
-                                        <Trade />
 
                                         <div className="flex flex-row justify-center items-center w-full gap-4">
                                             <button
@@ -318,19 +321,17 @@ const Review = () => {
                                                 Instant
                                             </button>
                                         </div>
-                                    </div>
                                 </>
                             ) : check === 1 ? (
                                 <>
                                     <div className="flex flex-row justify-center items-center gap-2">
                                         <div className="w-9 h-[5px] bg-primary-green rounded-l-sm" />
-                                        <div className="w-9 h-[5px] bg-primary-green rounded-l-sm" />
+                                        <div className="w-9 h-[5px] bg-primary-green " />
                                         <div className="w-9 h-[5px] bg-primary-green " />
 
                                         <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] rounded-r-sm" />
                                     </div>
-                                    <div className="flex flex-col justify-center items-center w-full gap-2 p-3">
-                                        <Trade />
+                                    
 
                                         <div className="flex flex-col justify-center items-center w-full gap-4">
 
@@ -345,20 +346,18 @@ const Review = () => {
                                                 check your metamask
                                             </h1>
                                         </div>
-                                    </div>
+                                    
                                 </>
                             )
                                 : check === 2 ? (
                                     <>
                                         <div className="flex flex-row justify-center items-center gap-2">
                                             <div className="w-9 h-[5px] bg-primary-green rounded-l-sm" />
-                                            <div className="w-9 h-[5px] bg-primary-green rounded-l-sm" />
-                                            <div className="w-9 h-[5px] bg-primary-green rounded-l-sm" />
+                                            <div className="w-9 h-[5px] bg-primary-green" />
+                                            <div className="w-9 h-[5px] bg-primary-green" />
 
                                             <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] rounded-r-sm" />
                                         </div>
-                                        <div className="flex flex-col justify-center items-center w-full gap-2 p-3">
-                                            <Trade />
 
                                             <div className="flex flex-col justify-center items-center w-full gap-4">
 
@@ -373,7 +372,6 @@ const Review = () => {
                                                     Confirm Stream in Metamask
                                                 </h1>
                                             </div>
-                                        </div>
                                     </>
                                 ) : (
                                     <></>
@@ -386,10 +384,8 @@ const Review = () => {
                     ) : (
                         <div className="flex flex-col justify-center items-center gap-3">
                             <div className="flex flex-row justify-center items-center gap-2">
-                                {/* active */}
                                 <div className="w-9 h-[5px] bg-primary-green rounded-l-sm" />
                                 <div className="w-9 h-[5px] bg-primary-green " />
-                                {/*non active */}
                                 <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] " />
                                 <div className="w-9 h-[5px] bg-[rgba(16,187,53,0.12)] rounded-r-sm" />
                             </div>
@@ -403,6 +399,14 @@ const Review = () => {
                     )}
                 </div>
             </div>
+            <Modal
+                    open={schedule}
+                    onClose={() => setSchedule(false)}
+                    title="Schedule"
+                    width="[28rem]"
+                >
+                    <Schedule />
+                </Modal>
         </div>
     );
 };

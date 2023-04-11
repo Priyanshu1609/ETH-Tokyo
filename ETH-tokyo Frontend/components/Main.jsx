@@ -26,12 +26,15 @@ const Main = () => {
         setData,
         onExecuteOrder } = useContext(AppContext);
 
+        const API_KEY = "9a4004fc1dc9433889e736e76614168a";
+        const provider = `https://goerli.infura.io/v3/${API_KEY}`;
 
     const [chainInput2, setChainInput2] = useState([]);
     const [tokenInput1, setTokenInput1] = useState([]);
     const [tokenInput2, setTokenInput2] = useState([]);
     const [coinprice, setCoinprice] = useState(0);
     const [schedule, setSchedule] = useState(false);
+    const [tokeninput, setTokeninput] = useState({});
     const [links, setLinks] = useState([
         {
             token: null,
@@ -39,6 +42,7 @@ const Main = () => {
             range: 0,
         },
     ]);
+
     const [links1, setLinks1] = useState([
         {
             token: null,
@@ -56,6 +60,8 @@ const Main = () => {
     const [confirm1, setConfirm1] = useState(false);
     const [multiinput, setMultiinput] = useState(0);
     const [multiinput1, setMultiinput1] = useState(0);
+    const [tokenarray, setTokenarray] = useState([
+    ]);
 
     const { address } = useAccount();
     const { chain, chains } = useNetwork()
@@ -66,7 +72,7 @@ const Main = () => {
     const [process, setProcess] = useState(0);
     const [txHash, setTxHash] = useState("");
     // console.log({ amount1 });
-
+    
     const giveAllowance = async () => {
         try {
 
@@ -94,7 +100,7 @@ const Main = () => {
                     _to: address,
                     _amount: amount1,
                     _fromToken: tokenInput1,
-                    _toToken: tokenInput2,
+                    _toToken: tokenarray,
                     _toChain: chainInput2,
                     _destinationDomain: "9991",
                     _relayerFee: 0,
@@ -109,6 +115,14 @@ const Main = () => {
             console.error(error);
         }
     }
+    const Web3 = require("web3");
+    const getBalance = async (token) => {
+        const web3 = new Web3(new Web3.providers.HttpProvider(provider));
+        const contract = new web3.eth.Contract(abi, token);
+        const res = await contract.methods.balanceOf(address).call();
+        const format = web3.utils.fromWei(res);
+        return format.toString() * 10 ** 12;
+      };
 
     const onConfirm = () => {
         if (!tokenInput1?.id) {
@@ -130,7 +144,7 @@ const Main = () => {
 
         setApprove(true)
     }
-
+    
 
     const getBalance1 = async () => {
         try {
@@ -150,12 +164,12 @@ const Main = () => {
             console.error(error);
         }
     };
-    const getBalance2 = async (token) => {
+    const getBalance2 = async () => {
         try {
 
             if (!tokenInput2?.id) return;
 
-            const contract1 = new ethers.Contract("0xE097d6B3100777DC31B34dC2c58fB524C2e76921", ERC_20, PROVIDERS[chainInput2.id]);
+            const contract1 = new ethers.Contract(tokenInput2?.id, ERC_20, PROVIDERS[chainInput2.id]);
             const res = await contract1.balanceOf(address);
             const dec = await contract1.decimals();
             const format = res / (10 ** dec);
@@ -167,13 +181,12 @@ const Main = () => {
         }
 
     };
-
+console.log(balance1,"balance");
 
     useEffect(() => {
         getBalance1();
         getBalance2();
-    }, [tokenInput1?.id, tokenInput2?.id])
-
+    }, [tokenInput1?.id, tokenInput2?.id]) 
 
     const handleRemove = (i) => {
         // console.log({ links });
@@ -284,7 +297,50 @@ const Main = () => {
             return [...s];
         });
     }
+        
+    const onSubmit1tomany = async () =>{
+        const toTokens = links1.map(i=>i.token);
+        // console.log(toTokens)
+        
+                     setData(
+                        {
+                            _from: address,
+                            _to: address,
+                            _amount: amount1,
+                            _fromToken: tokenInput1,
+                            _toToken: toTokens,
+                            _toChain: chainInput2,
+                            _destinationDomain: "9991",
+                            _relayerFee: 0,
+                        },
+                    );
+        setApprove(true)
+        
+    }
 
+    const onSubmitmanyto1 = async () =>{
+        const fromTokens = links.map(i=>i.token);
+        console.log(fromTokens)
+        const amount = links.map(i=>i.amount);
+        console.log(fromTokens)
+        setData(
+            {
+                _from: address,
+                _to: address,
+                _amount: amount,
+                _fromToken: fromTokens,
+                _toToken: tokenInput2,
+                _toChain: chainInput2,
+                _destinationDomain: "9991",
+                _relayerFee: 0,
+            },
+        );
+                
+        setApprove(true)
+    }
+   
+    
+    console.log(data,"d")
     return (
         <div className="flex flex-col justify-center items-center w-full pt-6  ">
             <div className="flex flex-col justify-center items-center py-4 px-5  gap-3 bg-white rounded-2xl">
@@ -432,25 +488,26 @@ const Main = () => {
                                                                             className="flex-[0.5]"
                                                                             placeholder="Select token"
                                                                             width={80}
-                                                                            value={tokenInput2}
-                                                                            // onChange={async (event) => {
-                                                                            //   const balance = await getBalance(
-                                                                            //     event.id
-                                                                            //   );
-                                                                            //   setLinks1((s) => {
-                                                                            //     s[i].token = event;
-                                                                            //     s[i].balance = balance;
-                                                                            //     return [...s];
-                                                                            //   });
-                                                                            // }}
-                                                                            onChange={setTokenInput2}
+                                                                            value={item.token}
+                                                                             onChange={async (event) => {
+                                                                               const balance = await getBalance(
+                                                                                 event.id
+                                                                               );
+                                                                               setLinks1((s) => {
+                                                                                 s[i].token = event;
+                                                                                 s[i].balance = balance;
+                                                                                 return [...s];
+                                                                               });
+                                                                            }}
+                                                                            
+                                                                            // onChange={setTokeninput}
                                                                         />
                                                                         <div className="flex flex-row gap-2 justify-start items-center">
                                                                             <h1 className=" font-normal text-xs text-[rgba(70,70,70,1)]">
                                                                                 Current Balance:
                                                                             </h1>
                                                                             <h1 className="font-semibold text-sm text-primary-green">
-                                                                                {balance1}
+                                                                                {item.balance}
                                                                             </h1>
                                                                         </div>
                                                                     </div>
@@ -608,7 +665,7 @@ const Main = () => {
 
                                 <div className="w-full flex justify-center items-center p-3">
                                     <button
-                                        onClick={onConfirm}
+                                        onClick={()=>onSubmit1tomany()}
                                         className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white"
                                     >
                                         Confirm
@@ -661,18 +718,18 @@ const Main = () => {
                                                                             placeholder="Select token"
                                                                             width={80}
                                                                             name="tokeninput"
-                                                                            value={tokenInput1}
-                                                                            onChange={setTokenInput1}
-                                                                        // onChange={async (event) => {
-                                                                        //   const balance = await getBalance(
-                                                                        //     event.id
-                                                                        //   );
-                                                                        //   setLinks((s) => {
-                                                                        //     s[i].token = event;
-                                                                        //     s[i].balance = balance;
-                                                                        //     return [...s];
-                                                                        //   });
-                                                                        // }}
+                                                                            value={item.token}
+                                                                            // onChange={setTokenInput1}
+                                                                        onChange={async (event) => {
+                                                                       const balance = await getBalance(
+                                                                         event.id
+                                                                       );
+                                                                       setLinks((s) => {
+                                                                         s[i].token = event;
+                                                                         s[i].balance = balance;
+                                                                         return [...s];
+                                                                       });
+                                                                     }}
                                                                         />
                                                                         <div className="flex flex-row gap-2 justify-start items-center">
                                                                             <h1 className=" font-normal text-xs text-[rgba(70,70,70,1)]">
@@ -686,7 +743,7 @@ const Main = () => {
                                                                     <div className="flex flex-col  w-[300px]">
                                                                         <div className="w-[300px]  border border-[rgba(0,0,0,0.1)] bg-white  rounded-[8px] items-center justify-between  flex">
                                                                             <div className="pl-2">
-                                                                                <button className="bg-primary-green py-[5px] px-[15px] gap-[7px] rounded-md font-semibold text-base text-white">
+                                                                                <button  className="bg-primary-green py-[5px] px-[15px] gap-[7px] rounded-md font-semibold text-base text-white">
                                                                                     Max
                                                                                 </button>
                                                                             </div>
@@ -969,7 +1026,7 @@ const Main = () => {
                                         </div>
                                     </div>
                                 </div>
-                                {confirm1 ? (
+                                {/* {confirm1 ? (
                                     <div className="flex flex-col justify-center items-center w-full gap-2">
                                         <Trade />
 
@@ -994,16 +1051,17 @@ const Main = () => {
                                             </button>
                                         </div>
                                     </div>
-                                ) : (
+                                ) : ( */}
                                     <div className="w-full flex justify-center items-center p-3">
                                         <button
-                                            onClick={() => setApprove(true)}
+                                            onClick={() => 
+                                                onSubmitmanyto1()}
                                             className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white"
                                         >
                                             Confirm
                                         </button>
                                     </div>
-                                )}
+                                {/* )} */}
                             </div>
 
                         </Tab.Panel>
@@ -1027,14 +1085,7 @@ const Main = () => {
                 >
                     <Error text={"You must have atleast one swap"} />
                 </Modal>
-                <Modal
-                    open={schedule}
-                    onClose={() => setSchedule(false)}
-                    title="Schedule"
-                    width="[28rem]"
-                >
-                    <Schedule />
-                </Modal>
+               
             </div>
         </div>
     )
