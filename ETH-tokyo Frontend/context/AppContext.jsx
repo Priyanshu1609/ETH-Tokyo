@@ -18,9 +18,9 @@ export const AppProvider = ({ children }) => {
     {
       _from: "",
       _to: "",
-      _amount: "",
-      _fromToken: {},
-      _toToken: {},
+      _amount: [],
+      _fromToken: [],
+      _toToken: [],
       _toChain: "",
       _destinationDomain: "",
       _relayerFee: ""
