@@ -23,7 +23,11 @@ export const AppProvider = ({ children }) => {
       _toToken: [],
       _toChain: "",
       _destinationDomain: "",
-      _relayerFee: ""
+      _relayerFee: "",
+      _frequency:"",
+      _time:[],
+      _triggerprice:"",
+      _triggertoken:[],
     }
   );
 

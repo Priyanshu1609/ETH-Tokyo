@@ -1,7 +1,9 @@
 import { Tab } from "@headlessui/react";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Selecttoken from "./Selecttoken";
 import Time from "./Time"
+
+import { AppContext } from "../context/AppContext";
 export const times = [
   { id: "hours", name: "Hours", decimals: 3600 },
   { id: "days", name: "Days", decimals: 86400 },
@@ -50,8 +52,48 @@ const Schedule = () => {
   const [tokeninput, setTokeninput] = useState({});
   const [tokeninput1, setTokenInput1] = useState({});
   const [amount, setAmount] = useState(0);
+  const { step,
+    setStep,
+    data,
+    setData,
+    onExecuteOrder } = useContext(AppContext);
 
-
+  const onSubmitDCA = async ()=>{
+    setData(
+      {
+        _from: "",
+        _to: "",
+        _amount: [],
+        _fromToken: [],
+        _toToken: [],
+        _toChain: "",
+        _destinationDomain: "",
+        _relayerFee: "",
+        _frequency:frequency,
+        _time:time,
+        _triggerprice:"",
+        _triggertoken:[],
+      }
+  );
+  }
+  const onSubmitprice = async ()=>{
+    setData(
+      {
+        _from: "",
+        _to: "",
+        _amount: [],
+        _fromToken: [],
+        _toToken: [],
+        _toChain: "",
+        _destinationDomain: "",
+        _relayerFee: "",
+        _frequency:"",
+        _time:[],
+        _triggerprice:triggerprice,
+        _triggertoken:token,
+      }
+  );
+  }
   return (
     <div classname="flex flex-col justify-start items-start w-full ">
       <div className="flex flex-col items-center px-[15px] py-[10px] w-full bg-[rgba(16,187,53,0.12)] ">
@@ -90,52 +132,62 @@ const Schedule = () => {
               </div>
               <div className="flex  justify-start items-center w-full gap-[2px]">
                 <h1 classname="font-semibold text-sm flex items-center text-[#464646] w-full">
-                 {amount} </h1>
-                <div className="flex flex-row items-center gap-[5px]">
-                    <img
-                      src={tokeninput?.icon}
-                      alt="icon"
-                      className="w-[10px] h-[10px] object-contain rounded-full"
-                    />
-                    <h1 className="font-semibold text-sm text-[#464646]">
-                      {tokeninput?.name}
-                    </h1>
-                  </div>
+                 {data.amount} </h1>
+                {data._fromToken.map((item,i)=>{
+                  <div key={i} className="flex flex-row items-center gap-[5px]">
+                  <img
+                    src={item.icon}
+                    alt="icon"
+                    className="w-[10px] h-[10px] object-contain rounded-full"
+                  />
+                  <h1 className="font-semibold text-sm text-[#464646]">
+                    {item.name}
+                  </h1>
+                </div>
+                })}
                     <h1 classname="font-semibold text-sm flex items-center text-[#464646] w-full">
                   will be swapped to  
                 </h1>
                 {/*  tokens which user select */}
-                <div className="flex flex-row items-center gap-[5px]">
+                {data. _toToken.map((item,i)=>{
+
+                <div key={i} className="flex flex-row items-center gap-[5px]">
                     <img
-                      src={tokeninput?.icon}
+                      src={item.icon}
                       alt="icon"
                       className="w-[10px] h-[10px] object-contain rounded-full"
                     />
                     <h1 className="font-semibold text-sm text-[#464646]">
-                      {tokeninput?.name}
+                      {item.name}
                     </h1>
                   </div>
+                })}
                   <h1 classname="font-semibold text-sm flex items-center text-[#464646] w-full">
-                   ,at the frequency of ({{amount}/{frequency}}) 
+                   ,at the frequency of ({data._amount}/{data._frequency}) 
                 </h1>
-                <div className="flex flex-row items-center gap-[5px]">
-                    <img
-                      src={tokeninput?.icon}
-                      alt="icon"
-                      className="w-[10px] h-[10px] object-contain rounded-full"
-                    />
-                    <h1 className="font-semibold text-sm text-[#464646]">
-                      {tokeninput?.name}
-                    </h1>
-                  </div>
+                {data._fromToken.map((item,i)=>{
+                  <div key={i} className="flex flex-row items-center gap-[5px]">
+                  <img
+                    src={item.icon}
+                    alt="icon"
+                    className="w-[10px] h-[10px] object-contain rounded-full"
+                  />
+                  <h1 className="font-semibold text-sm text-[#464646]">
+                    {item.name}
+                  </h1>
+                </div>
+                })}
                   <h1 classname="font-semibold text-sm flex items-center text-[#464646] w-full">
-                   /{time?.name}
+                   /{data._time.name}
                 </h1>
                   
               </div>
 
               <div className="flex flex-col items-end gap-[10px] w-full">
-                <button className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white">
+                <button
+                onClick={()=>{
+                  onSubmitDCA();
+                }} className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white">
                   Confirm
                 </button>
               </div>
@@ -174,7 +226,11 @@ const Schedule = () => {
               </div>
               
               <div className="flex flex-col items-end gap-[10px] w-full">
-                <button className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white">
+                <button 
+                onClick={()=>{
+                  onSubmitprice();
+                }}
+                className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white">
                   Confirm
                 </button>
               </div>
