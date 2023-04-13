@@ -26,8 +26,8 @@ const Main = () => {
         setData,
         onExecuteOrder } = useContext(AppContext);
 
-        const API_KEY = "9a4004fc1dc9433889e736e76614168a";
-        const provider = `https://goerli.infura.io/v3/${API_KEY}`;
+    const API_KEY = "9a4004fc1dc9433889e736e76614168a";
+    const provider = `https://goerli.infura.io/v3/${API_KEY}`;
 
     const [chainInput2, setChainInput2] = useState([]);
     const [tokenInput1, setTokenInput1] = useState([]);
@@ -68,11 +68,12 @@ const Main = () => {
 
     const [balance, setBalance] = useState(0.0);
     const [balance1, setBalance1] = useState(0.0);
+    const [isApproved, setIsApproved] = useState(false);
 
     const [process, setProcess] = useState(0);
     const [txHash, setTxHash] = useState("");
     // console.log({ amount1 });
-    
+
     const giveAllowance = async () => {
         try {
 
@@ -84,15 +85,15 @@ const Main = () => {
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = provider.getSigner();
             setProcess(1);
-            const contract = new ethers.Contract(tokenInput1?.id, ERC_20, signer);
-            const tx = await contract.approve(FACTORY_ADDRESSES[5], ethers.constants.MaxUint256);
-            setTxHash("https://goerli.etherscan.io/tx/" + tx.hash);
+            // const contract = new ethers.Contract(tokenInput1?.id, ERC_20, signer);
+            // const tx = await contract.approve(FACTORY_ADDRESSES[5], ethers.constants.MaxUint256);
+            // setTxHash("https://goerli.etherscan.io/tx/" + tx.hash);
             setProcess(2)
-            const res = await tx.wait();
+            // const res = await tx.wait();
 
-            console.log(tx, res);
+            // console.log(tx, res);
             setProcess(3);
-            setIsApproved(true);
+            // setIsApproved(true);
 
             setData(
                 {
@@ -115,14 +116,6 @@ const Main = () => {
             console.error(error);
         }
     }
-    const Web3 = require("web3");
-    const getBalance = async (token) => {
-        const web3 = new Web3(new Web3.providers.HttpProvider(provider));
-        const contract = new web3.eth.Contract(abi, token);
-        const res = await contract.methods.balanceOf(address).call();
-        const format = web3.utils.fromWei(res);
-        return format.toString() * 10 ** 12;
-      };
 
     const onConfirm = () => {
         if (!tokenInput1?.id) {
@@ -144,8 +137,26 @@ const Main = () => {
 
         setApprove(true)
     }
-    
 
+
+    const getBalance = async (token) => {
+        try {
+            if (!tokenInput1?.id) return;
+
+            const contract1 = new ethers.Contract(token, ERC_20, PROVIDERS[chain.id]);
+
+            const res = await contract1.balanceOf(address);
+            const dec = await contract1.decimals();
+
+            const format = res / (10 ** dec);
+            // const format = "1000"
+            // console.log(format);
+            return format.toString();
+
+        } catch (error) {
+            console.error(error);
+        }
+    };
     const getBalance1 = async () => {
         try {
             if (!tokenInput1?.id) return;
@@ -181,12 +192,12 @@ const Main = () => {
         }
 
     };
-console.log(balance1,"balance");
+    console.log(balance1, "balance");
 
     useEffect(() => {
         getBalance1();
         getBalance2();
-    }, [tokenInput1?.id, tokenInput2?.id]) 
+    }, [tokenInput1?.id, tokenInput2?.id])
 
     const handleRemove = (i) => {
         // console.log({ links });
@@ -297,31 +308,48 @@ console.log(balance1,"balance");
             return [...s];
         });
     }
-        
-    const onSubmit1tomany = async () =>{
-        const toTokens = links1.map(i=>i.token);
+
+    const onSubmit1tomany = async () => {
+        if (!tokenInput1?.id) {
+            alert("Please select a token from")
+            return
+        }
+        // if (!tokenInput2?.id) {
+        //     alert("Please select a token to")
+        //     return
+        // }
+        if (!amount1) {
+            alert("Please enter an amount")
+            return
+        }
+        if (!chainInput2?.id) {
+            alert("Please select a to chain")
+            return
+        }
+
+        const toTokens = links1.map(i => i.token);
         // console.log(toTokens)
-        
-                     setData(
-                        {
-                            _from: address,
-                            _to: address,
-                            _amount: amount1,
-                            _fromToken: tokenInput1,
-                            _toToken: toTokens,
-                            _toChain: chainInput2,
-                            _destinationDomain: "9991",
-                            _relayerFee: 0,
-                        },
-                    );
+
+        setData(
+            {
+                _from: address,
+                _to: address,
+                _amount: amount1,
+                _fromToken: tokenInput1,
+                _toToken: toTokens,
+                _toChain: chainInput2,
+                _destinationDomain: "9991",
+                _relayerFee: 0,
+            },
+        );
         setApprove(true)
-        
+
     }
 
-    const onSubmitmanyto1 = async () =>{
-        const fromTokens = links.map(i=>i.token);
+    const onSubmitmanyto1 = async () => {
+        const fromTokens = links.map(i => i.token);
         console.log(fromTokens)
-        const amount = links.map(i=>i.amount);
+        const amount = links.map(i => i.amount);
         console.log(fromTokens)
         setData(
             {
@@ -335,12 +363,12 @@ console.log(balance1,"balance");
                 _relayerFee: 0,
             },
         );
-                
+
         setApprove(true)
     }
-   
-    
-    console.log(data,"d")
+
+
+    console.log(data, "d")
     return (
         <div className="flex flex-col justify-center items-center w-full pt-6  ">
             <div className="flex flex-col justify-center items-center py-4 px-5  gap-3 bg-white rounded-2xl">
@@ -489,18 +517,18 @@ console.log(balance1,"balance");
                                                                             placeholder="Select token"
                                                                             width={80}
                                                                             value={item.token}
-                                                                             onChange={async (event) => {
-                                                                               const balance = await getBalance(
-                                                                                 event.id
-                                                                               );
-                                                                               setLinks1((s) => {
-                                                                                 s[i].token = event;
-                                                                                 s[i].balance = balance;
-                                                                                 return [...s];
-                                                                               });
+                                                                            onChange={async (event) => {
+                                                                                const balance = await getBalance(
+                                                                                    event.id
+                                                                                );
+                                                                                setLinks1((s) => {
+                                                                                    s[i].token = event;
+                                                                                    s[i].balance = balance;
+                                                                                    return [...s];
+                                                                                });
                                                                             }}
-                                                                            
-                                                                            // onChange={setTokeninput}
+
+                                                                        // onChange={setTokeninput}
                                                                         />
                                                                         <div className="flex flex-row gap-2 justify-start items-center">
                                                                             <h1 className=" font-normal text-xs text-[rgba(70,70,70,1)]">
@@ -665,7 +693,7 @@ console.log(balance1,"balance");
 
                                 <div className="w-full flex justify-center items-center p-3">
                                     <button
-                                        onClick={()=>onSubmit1tomany()}
+                                        onClick={() => onSubmit1tomany()}
                                         className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white"
                                     >
                                         Confirm
@@ -720,16 +748,16 @@ console.log(balance1,"balance");
                                                                             name="tokeninput"
                                                                             value={item.token}
                                                                             // onChange={setTokenInput1}
-                                                                        onChange={async (event) => {
-                                                                       const balance = await getBalance(
-                                                                         event.id
-                                                                       );
-                                                                       setLinks((s) => {
-                                                                         s[i].token = event;
-                                                                         s[i].balance = balance;
-                                                                         return [...s];
-                                                                       });
-                                                                     }}
+                                                                            onChange={async (event) => {
+                                                                                const balance = await getBalance(
+                                                                                    event.id
+                                                                                );
+                                                                                setLinks((s) => {
+                                                                                    s[i].token = event;
+                                                                                    s[i].balance = balance;
+                                                                                    return [...s];
+                                                                                });
+                                                                            }}
                                                                         />
                                                                         <div className="flex flex-row gap-2 justify-start items-center">
                                                                             <h1 className=" font-normal text-xs text-[rgba(70,70,70,1)]">
@@ -743,7 +771,7 @@ console.log(balance1,"balance");
                                                                     <div className="flex flex-col  w-[300px]">
                                                                         <div className="w-[300px]  border border-[rgba(0,0,0,0.1)] bg-white  rounded-[8px] items-center justify-between  flex">
                                                                             <div className="pl-2">
-                                                                                <button  className="bg-primary-green py-[5px] px-[15px] gap-[7px] rounded-md font-semibold text-base text-white">
+                                                                                <button className="bg-primary-green py-[5px] px-[15px] gap-[7px] rounded-md font-semibold text-base text-white">
                                                                                     Max
                                                                                 </button>
                                                                             </div>
@@ -1052,15 +1080,15 @@ console.log(balance1,"balance");
                                         </div>
                                     </div>
                                 ) : ( */}
-                                    <div className="w-full flex justify-center items-center p-3">
-                                        <button
-                                            onClick={() => 
-                                                onSubmitmanyto1()}
-                                            className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white"
-                                        >
-                                            Confirm
-                                        </button>
-                                    </div>
+                                <div className="w-full flex justify-center items-center p-3">
+                                    <button
+                                        onClick={() =>
+                                            onSubmitmanyto1()}
+                                        className="bg-primary-green py-[10px] px-[30px]  rounded-lg font-semibold text-base text-white"
+                                    >
+                                        Confirm
+                                    </button>
+                                </div>
                                 {/* )} */}
                             </div>
 
@@ -1085,7 +1113,7 @@ console.log(balance1,"balance");
                 >
                     <Error text={"You must have atleast one swap"} />
                 </Modal>
-               
+
             </div>
         </div>
     )
