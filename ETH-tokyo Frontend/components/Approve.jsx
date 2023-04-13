@@ -11,7 +11,7 @@ const Approve = ({ giveAllowance, txHash, process, tokenInput1 ,tokeninput }) =>
     data,
     setData,
     onExecuteOrder } = useContext(AppContext);
-    const [onetomany,setOnetomany] = useState (false);
+    const [onetomany,setOnetomany] = useState (true);
 
   return (
     <div classname="flex flex-col justify-start items-start w-full">
