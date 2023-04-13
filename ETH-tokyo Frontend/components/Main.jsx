@@ -34,7 +34,7 @@ const Main = () => {
     const [tokenInput2, setTokenInput2] = useState([]);
     const [coinprice, setCoinprice] = useState(0);
     const [schedule, setSchedule] = useState(false);
-    const [tokeninput, setTokeninput] = useState({});
+    const [tokeninput, setTokeninput] = useState([]);
     const [links, setLinks] = useState([
         {
             token: null,
@@ -77,10 +77,10 @@ const Main = () => {
     const giveAllowance = async () => {
         try {
 
-            if (!tokenInput1?.id) {
-                alert("Please select token");
-                return
-            };
+            // if (!tokenInput1?.id) {
+            //     alert("Please select token");
+            //     return
+            // };
             console.log("1");
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = provider.getSigner();
@@ -363,6 +363,7 @@ const Main = () => {
                 _relayerFee: 0,
             },
         );
+        setTokeninput(fromTokens);
 
         setApprove(true)
     }
@@ -1102,7 +1103,7 @@ const Main = () => {
                     title="Approve"
                     width="[28rem]"
                 >
-                    <Approve giveAllowance={giveAllowance} txHash={txHash} process={process} tokenInput1={tokenInput1} />
+                    <Approve giveAllowance={giveAllowance} txHash={txHash} process={process} tokenInput1={tokenInput1} tokeninput={tokeninput} />
                 </Modal>
                 <Modal
                     open={modal1}

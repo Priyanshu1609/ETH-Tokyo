@@ -38,6 +38,8 @@ const Review = () => {
     const onSubmit = () => {
         onExecuteOrder(setCheck, setStep);
     }
+    
+    const [onetomany,setOnetomany] = useState (false);
 
     return (
         <div className="flex justify-center items-center w-full pt-6  ">
@@ -74,10 +76,7 @@ const Review = () => {
                                 </h1>
                             </div>
                         </div>
-
-
-                        {/* {data._fromToken.map((item,i)=>{ */}
-                            <div  className="flex flex-row justify-between items-center py-[13px] px-4 w-full bg-white border border-[rgba(0,0,0,0.1)] rounded-lg">
+                        {onetomany ? (<div  className="flex flex-row justify-between items-center py-[13px] px-4 w-full bg-white border border-[rgba(0,0,0,0.1)] rounded-lg">
                             <div className="flex flex-row items-center gap-[18px]">
                                 <img
                                     src={data._fromToken.icon}
@@ -97,8 +96,32 @@ const Review = () => {
                                     ${dollar}
                                 </h1>
                             </div>
+                        </div>):(
+                        <>
+                         {data._fromToken.map((item, i)=>(
+                             <div key={i} className="flex flex-row justify-between items-center py-[13px] px-4 w-full bg-white border border-[rgba(0,0,0,0.1)] rounded-lg">
+                            <div className="flex flex-row items-center gap-[18px]">
+                                <img
+                                    src={item.icon}
+                                    alt="icon"
+                                    className="w-[30px] h-[30px] object-contain rounded-full"
+                                    />
+                                <h1 className="font-semibold text-lg text-[#464646]">
+                                    {item.name}
+                                </h1>
+                            </div>
+                            <div className="flex flex-col items-end gap-2 ">
+                                <h1 className="font-semibold text-base text-[#464646]">
+                                    {" "}
+                                    {data._amount} {item.name}
+                                </h1>
+                                <h1 className="font-normal text-sm text-[#464646]">
+                                    ${dollar}
+                                </h1>
+                            </div>
                         </div>
-                        {/* })} */}
+                        ))}
+                        </>)}
                     </div>
                     <div>
                         <SwapBTN />
@@ -116,25 +139,25 @@ const Review = () => {
 
                             <div className="flex flex-row items-center gap-[8px]">
                                 <img
-                                    src={data.toChain?.icon}
+                                    src={data._toChain?.icon}
                                     alt="icon"
                                     className="w-[30px] h-[30px] object-contain rounded-full"
                                 />
                                 <h1 className="text-sm text-center text-[#464646] font-semibold">
-                                    {data.toChain?.name}
+                                    {data._toChain?.name}
                                 </h1>
                             </div>
                         </div>
-                       {data._toToken.map((item,i)=>{
+                       {data._toToken.map((item, i)=>(
                          <div key={i} className="flex flex-row justify-between items-center py-[13px] px-4 w-full bg-white border border-[rgba(0,0,0,0.1)] rounded-lg">
                          <div className="flex flex-row items-center gap-[18px]">
                              <img
-                                 src={item.icon}
+                                 src={item?.icon}
                                  alt="icon"
                                  className="w-[30px] h-[30px] object-contain rounded-full"
                              />
                              <h1 className="font-semibold text-lg text-[#464646]">
-                                 {item.name}
+                                 {item?.name}
                              </h1>
                              <button className="flex justify-center items-center p-[12px] bg-primary-green rounded-md">
                                  <svg
@@ -176,7 +199,7 @@ const Review = () => {
                              </h1>
                          </div>
                      </div>
-                       })}
+                       ))}
                     </div>
                 </div>
                 {schedule ? (
