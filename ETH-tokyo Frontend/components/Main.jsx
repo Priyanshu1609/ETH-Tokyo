@@ -329,8 +329,8 @@ const Main = () => {
 
         const toTokens = links1.map(i => i.token);
         // console.log(toTokens)
-
-        setData(
+        setTokenarray(toTokens);
+                setData(
             {
                 _from: address,
                 _to: address,

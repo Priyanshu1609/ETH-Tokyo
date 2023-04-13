@@ -76,29 +76,29 @@ const Review = () => {
                         </div>
 
 
-                        {data._fromToken.map((item,i)=>{
-                            <div key={i} className="flex flex-row justify-between items-center py-[13px] px-4 w-full bg-white border border-[rgba(0,0,0,0.1)] rounded-lg">
+                        {/* {data._fromToken.map((item,i)=>{ */}
+                            <div  className="flex flex-row justify-between items-center py-[13px] px-4 w-full bg-white border border-[rgba(0,0,0,0.1)] rounded-lg">
                             <div className="flex flex-row items-center gap-[18px]">
                                 <img
-                                    src={item.icon}
+                                    src={data._fromToken.icon}
                                     alt="icon"
                                     className="w-[30px] h-[30px] object-contain rounded-full"
                                 />
                                 <h1 className="font-semibold text-lg text-[#464646]">
-                                    {item.name}
+                                    {data._fromToken.name}
                                 </h1>
                             </div>
                             <div className="flex flex-col items-end gap-2 ">
                                 <h1 className="font-semibold text-base text-[#464646]">
                                     {" "}
-                                    {data._amount} {item.name}
+                                    {data._amount} {data._fromToken.name}
                                 </h1>
                                 <h1 className="font-normal text-sm text-[#464646]">
                                     ${dollar}
                                 </h1>
                             </div>
                         </div>
-                        })}
+                        {/* })} */}
                     </div>
                     <div>
                         <SwapBTN />
@@ -116,12 +116,12 @@ const Review = () => {
 
                             <div className="flex flex-row items-center gap-[8px]">
                                 <img
-                                    src={data.toChain.icon}
+                                    src={data.toChain?.icon}
                                     alt="icon"
                                     className="w-[30px] h-[30px] object-contain rounded-full"
                                 />
                                 <h1 className="text-sm text-center text-[#464646] font-semibold">
-                                    {data.toChain.name}
+                                    {data.toChain?.name}
                                 </h1>
                             </div>
                         </div>
