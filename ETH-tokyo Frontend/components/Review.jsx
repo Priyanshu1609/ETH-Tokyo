@@ -39,7 +39,7 @@ const Review = () => {
         onExecuteOrder(setCheck, setStep);
     }
     
-    const [onetomany,setOnetomany] = useState (false);
+    const [onetomany,setOnetomany] = useState (true);
 
     return (
         <div className="flex justify-center items-center w-full pt-6  ">
