@@ -45,13 +45,15 @@ contract BulkSwap is OpsTaskCreator {
     constructor(
         IConnext _connext,
         ISwapRouter _swapRouter,
-        address payable _ops,
-        address chainLink
-    ) OpsTaskCreator(_ops, msg.sender) {
+        address payable _ops
+    )
+        // address chainLink
+        OpsTaskCreator(_ops, msg.sender)
+    {
         connext = _connext;
         swapRouter = _swapRouter;
         owner = msg.sender;
-        priceFeed = AggregatorV3Interface(chainLink);
+        // priceFeed = AggregatorV3Interface(chainLink);
     }
 
     function getLatestPrice() public view returns (int) {
@@ -66,28 +68,41 @@ contract BulkSwap is OpsTaskCreator {
     }
 
     function createTask(
-        address _token,
-        uint256 amountIn
+        address _from,
+        address _to,
+        uint256 _amount,
+        int256 _price,
+        address _fromToken,
+        address _toToken,
+        uint256 _toChain,
+        uint32 destinationDomain,
+        uint256 relayerFee
     ) internal returns (bytes32) {
         bytes memory execData = abi.encodeWithSelector(
-            this.swapExactInputSingle.selector,
-            _token,
-            amountIn
-            // _recipient
+            this.executeLimitOrder.selector,
+            _from,
+            _to,
+            _amount,
+            _price,
+            _fromToken,
+            _toToken,
+            _toChain,
+            destinationDomain,
+            relayerFee
         );
 
         ModuleData memory moduleData = ModuleData({
-            modules: new Module[](2),
-            args: new bytes[](2)
+            modules: new Module[](3),
+            args: new bytes[](3)
         });
 
         moduleData.modules[0] = Module.TIME;
         moduleData.modules[1] = Module.PROXY;
-        // moduleData.modules[2] = Module.SINGLE_EXEC;
+        moduleData.modules[2] = Module.SINGLE_EXEC;
 
-        moduleData.args[0] = _timeModuleArg(block.timestamp, 60);
+        moduleData.args[0] = _timeModuleArg(block.timestamp, 5);
         moduleData.args[1] = _proxyModuleArg();
-        // moduleData.args[2] = _singleExecModuleArg();
+        moduleData.args[2] = _singleExecModuleArg();
 
         bytes32 id = _createTask(address(this), execData, moduleData, ETH);
         return id;
@@ -257,6 +272,7 @@ contract BulkSwap is OpsTaskCreator {
         address from;
         address to;
         uint256 amount;
+        int256 price;
         address fromToken;
         address toToken;
         uint256 toChain;
@@ -281,18 +297,72 @@ contract BulkSwap is OpsTaskCreator {
         _;
     }
 
+    error CONDITION_NOT_MET(int, int);
+
+    int256 public price = 100;
+
+    function changePrice(int256 _price) public ownerOnly {
+        price = _price;
+    }
+
+    function executeLimitOrder(
+        address _from,
+        address _to,
+        uint256 _amount,
+        int256 _price,
+        address _fromToken,
+        address _toToken,
+        uint256 _toChain,
+        uint32 destinationDomain,
+        uint256 relayerFee
+    ) public payable {
+        // int price = getLatestPrice();
+        if (price < _price) {
+            revert CONDITION_NOT_MET(price, _price);
+        }
+
+        executeOrder(
+            _from,
+            _to,
+            _amount,
+            _fromToken,
+            _toToken,
+            _toChain,
+            destinationDomain,
+            relayerFee
+        );
+
+        (uint256 fee, address feeToken) = _getFeeDetails();
+        _transfer(fee, feeToken);
+    }
+
     function createDeposit(
         address _from,
         address _to,
         uint256 _amount,
+        int256 _price,
         address _fromToken,
         address _toToken,
-        uint256 _toChain
-    ) external returns (bool) {
+        uint256 _toChain,
+        uint32 destinationDomain,
+        uint256 relayerFee
+    ) external payable returns (bool) {
         DepositCounter++;
         authorOf[DepositCounter] = _from;
         DepositsOf[_from].push(DepositCounter);
         activeDepositCounter++;
+
+        createTask(
+            _from,
+            _to,
+            _amount,
+            _price,
+            _fromToken,
+            _toToken,
+            _toChain,
+            destinationDomain,
+            relayerFee
+        );
 
         activeDeposits.push(
             DepositStruct(
@@ -300,6 +370,7 @@ contract BulkSwap is OpsTaskCreator {
                 _from,
                 _to,
                 _amount,
+                _price,
                 _fromToken,
                 _toToken,
                 _toChain,
