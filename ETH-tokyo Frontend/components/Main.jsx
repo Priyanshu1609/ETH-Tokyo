@@ -148,13 +148,13 @@ const Main = () => {
         try {
             if (!tokenInput1?.id) return;
 
-            const contract1 = new ethers.Contract(token, ERC_20, PROVIDERS[chain.id]);
+            // const contract1 = new ethers.Contract(token, ERC_20, PROVIDERS[chain.id]);
 
-            const res = await contract1.balanceOf(address);
-            const dec = await contract1.decimals();
+            // const res = await contract1.balanceOf(address);
+            // const dec = await contract1.decimals();
 
-            const format = res / (10 ** dec);
-            // const format = "1000"
+            // const format = res / (10 ** dec);
+            const format = "1000"
             // console.log(format);
             return format.toString();
 
@@ -166,13 +166,13 @@ const Main = () => {
         try {
             if (!tokenInput1?.id) return;
 
-            const contract1 = new ethers.Contract(tokenInput1?.id, ERC_20, PROVIDERS[chain.id]);
+            // const contract1 = new ethers.Contract(tokenInput1?.id, ERC_20, PROVIDERS[chain.id]);
 
-            const res = await contract1.balanceOf(address);
-            const dec = await contract1.decimals();
+            // const res = await contract1.balanceOf(address);
+            // const dec = await contract1.decimals();
 
-            const format = res / (10 ** dec);
-            // const format = "1000"
+            // const format = res / (10 ** dec);
+            const format = "1000"
             // console.log(format);
             setBalance(format.toString());
 
@@ -185,11 +185,11 @@ const Main = () => {
 
             if (!tokenInput2?.id) return;
 
-            const contract1 = new ethers.Contract(tokenInput2?.id, ERC_20, PROVIDERS[chainInput2.id]);
-            const res = await contract1.balanceOf(address);
-            const dec = await contract1.decimals();
-            const format = res / (10 ** dec);
-            // const format = "1000"
+            // const contract1 = new ethers.Contract(tokenInput2?.id, ERC_20, PROVIDERS[chainInput2.id]);
+            // const res = await contract1.balanceOf(address);
+            // const dec = await contract1.decimals();
+            // const format = res / (10 ** dec);
+            const format = "1000"
             setBalance1(format.toString());
 
         } catch (error) {
