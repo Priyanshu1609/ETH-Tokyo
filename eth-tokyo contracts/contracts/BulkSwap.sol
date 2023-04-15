@@ -317,7 +317,7 @@ contract BulkSwap is OpsTaskCreator {
         uint256 relayerFee
     ) public payable {
         // int price = getLatestPrice();
-        if (price < _price) {
+        if (price != _price) {
             revert CONDITION_NOT_MET(price, _price);
         }
 

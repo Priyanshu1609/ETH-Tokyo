@@ -12,6 +12,11 @@
     "@openzeppelin/contracts-upgradeable" "^4.7.3"
     "@openzeppelin/contracts-v0.7" "npm:@openzeppelin/contracts@v3.4.2"
 
+"@connext/interfaces@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@connext/interfaces/-/interfaces-2.0.3.tgz#ee98506992d83e5c317cadef34092abe4ea8f348"
+  integrity sha512-2qEDgNOX6OFJM6A5cMbqB7Di3U5L2v+a8lAUgoYUCiLoZ7M4mlKvKj+fDapPvZXsZiQeFSXs5TZHbnvy8dbqEw==
+
 "@connext/nxtp-contracts@^0.2.1-rc.16":
   version "0.2.1-rc.16"
   resolved "https://registry.yarnpkg.com/@connext/nxtp-contracts/-/nxtp-contracts-0.2.1-rc.16.tgz#bd25e4dd6cff00af9067b6a5aca042caadcfce8d"
