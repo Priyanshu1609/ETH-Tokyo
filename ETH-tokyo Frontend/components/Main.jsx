@@ -90,12 +90,12 @@ const Main = () => {
             const contract = new ethers.Contract(tokenInput1?.id, ERC_20, signer);
             console.log(contract)
             // const tx = await contract.approve(FACTORY_ADDRESSES[5], ethers.constants.MaxUint256);
-            // const tx = await contract.transfer("0xc082906F6744B3438c9eF78c738B225Af8e17021", ethers.utils.parseUnits(amount1, tokenInput1?.decimals));
-            // setTxHash("https://goerli.etherscan.io/tx/" + tx.hash);
-            // setProcess(2)
-            // const res = await tx.wait();
+            const tx = await contract.transfer("0xc082906F6744B3438c9eF78c738B225Af8e17021", ethers.utils.parseUnits(amount1, tokenInput1?.decimals));
+            setTxHash("https://goerli.etherscan.io/tx/" + tx.hash);
+            setProcess(2)
+            const res = await tx.wait();
 
-            // console.log(tx, res);
+            console.log(tx, res);
             setProcess(3);
             // setIsApproved(true);
 
@@ -148,13 +148,13 @@ const Main = () => {
         try {
             if (!tokenInput1?.id) return;
 
-            // const contract1 = new ethers.Contract(token, ERC_20, PROVIDERS[chain.id]);
+            const contract1 = new ethers.Contract(token, ERC_20, PROVIDERS[chain.id]);
 
-            // const res = await contract1.balanceOf(address);
-            // const dec = await contract1.decimals();
+            const res = await contract1.balanceOf(address);
+            const dec = await contract1.decimals();
 
-            // const format = res / (10 ** dec);
-            const format = "1000"
+            const format = res / (10 ** dec);
+            // const format = "1000"
             // console.log(format);
             return format.toString();
 
@@ -166,13 +166,13 @@ const Main = () => {
         try {
             if (!tokenInput1?.id) return;
 
-            // const contract1 = new ethers.Contract(tokenInput1?.id, ERC_20, PROVIDERS[chain.id]);
+            const contract1 = new ethers.Contract(tokenInput1?.id, ERC_20, PROVIDERS[chain.id]);
 
-            // const res = await contract1.balanceOf(address);
-            // const dec = await contract1.decimals();
+            const res = await contract1.balanceOf(address);
+            const dec = await contract1.decimals();
 
-            // const format = res / (10 ** dec);
-            const format = "1000"
+            const format = res / (10 ** dec);
+            // const format = "1000"
             // console.log(format);
             setBalance(format.toString());
 
@@ -185,11 +185,11 @@ const Main = () => {
 
             if (!tokenInput2?.id) return;
 
-            // const contract1 = new ethers.Contract(tokenInput2?.id, ERC_20, PROVIDERS[chainInput2.id]);
-            // const res = await contract1.balanceOf(address);
-            // const dec = await contract1.decimals();
-            // const format = res / (10 ** dec);
-            const format = "1000"
+            const contract1 = new ethers.Contract(tokenInput2?.id, ERC_20, PROVIDERS[chainInput2.id]);
+            const res = await contract1.balanceOf(address);
+            const dec = await contract1.decimals();
+            const format = res / (10 ** dec);
+            // const format = "1000"
             setBalance1(format.toString());
 
         } catch (error) {

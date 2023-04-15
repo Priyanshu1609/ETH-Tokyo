@@ -82,24 +82,24 @@ const Schedule = () => {
   }
   const onSubmitprice = async () => {
 
-    onExecuteLimitOrder(setCheck, setStep, triggerprice);
+    await onExecuteLimitOrder(setCheck, setStep, triggerprice);
 
-    // setData(
-    //   {
-    //     _from: "",
-    //     _to: "",
-    //     _amount: [],
-    //     _fromToken: [],
-    //     _toToken: [],
-    //     _toChain: "",
-    //     _destinationDomain: "",
-    //     _relayerFee: "",
-    //     _frequency: "",
-    //     _time: [],
-    //     _triggerprice: triggerprice,
-    //     _triggertoken: token,
-    //   }
-    // );
+    setData(
+      {
+        _from: "",
+        _to: "",
+        _amount: [],
+        _fromToken: [],
+        _toToken: [],
+        _toChain: "",
+        _destinationDomain: "",
+        _relayerFee: "",
+        _frequency: "",
+        _time: [],
+        _triggerprice: triggerprice,
+        _triggertoken: token,
+      }
+    );
   }
   return (
     <div classname="flex flex-col justify-start items-start w-full ">
